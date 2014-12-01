@@ -232,6 +232,7 @@ void add_reservations( void )
 void setup_reservation( void )
 {
 	char buff[BUFFLEN];
+	char searchbuff[64];
 	struct tm brokendate;
 	int result;
 	time_t timekey;
@@ -244,75 +245,74 @@ void setup_reservation( void )
 		{
 			puts( "Invalid date. The following list contains valid inputs." );
 			print_format_list();
-			puts( "\nSelect a date and time to check or press enter to go back." );
+			puts( "\nEnter a date and time to check or press enter to go back." );
 		} else if( result != 0 ) {
 			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/\n", __FUNCTION__, __LINE__, buff, result ); 
 			puts( "Error converting date. Exiting program." );
 			puts( "Press enter to quit. . ." );
 			getchar();
 			exit(1);
-		} else {
-			timekey = mktime( &brokendate );
-
-			size_t* roomlookups = resVect_select_valid_rooms( &resList, timekey, rooms, numRooms );
-
-			puts( "The following rooms are available." );
-			if( roomlookups )
-			{
-				crr_print_menu( rooms, roomlookups, res_lookup_size );
-			} else {
-				print_rooms( rooms, numRooms );
-				res_lookup_size = numRooms;
-			}
-			puts( "Press enter to go back." );
-			int room;
-			while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
-			{
-				if( strlen(buff) > 2 )
-				{
-					puts( "Not a valid input" );
-					continue;
-				}
-
-				int err = sscanf(buff, "%d", &room);
-				if( err != 1 || room < 1 || room > res_lookup_size )
-				{
-					puts( "Invalid room id.\n" );
-					puts( "The following rooms are available" );
-					crr_print_menu( rooms, roomlookups, res_lookup_size );
-					puts( "Press enter to go back." );
-					continue;
-				}
-				room--;	// Make 0 offset
-				char* roomname;
-				if( roomlookups )
-					roomname = rooms[ roomlookups[room] ];
-
-				else
-					roomname = rooms[room];
-
-				reservation res = new_reservation( roomname );
-				reservation* conflict = resVect_add( &resList, res );
-				if( conflict )
-				{
-					puts( "There was a conflicting reservation:" );
-					res_print_reservation( conflict );
-					puts( "The following rooms are available" );
-					crr_print_menu( rooms, roomlookups, res_lookup_size );
-					puts( "Press enter to go back." );
-					continue;
-				} else {
-					puts( "Your reservation has been added!" );
-					break;
-				}
-			}
-
-			if( roomlookups )
-				free( roomlookups );
-			break;
 		}
-	}
+		timekey = mktime( &brokendate );
 
+		size_t* roomlookups = resVect_select_valid_rooms( &resList, timekey, rooms, numRooms );
+
+		printf( "The following rooms are available on %s.\n", buff );
+		strncpy( searchbuff, buff, 64 );
+		if( roomlookups )
+		{
+			crr_print_menu( rooms, roomlookups, res_lookup_size );
+		} else {
+			print_rooms( rooms, numRooms );
+			res_lookup_size = numRooms;
+		}
+		puts( "Press enter to go back." );
+		int room;
+		while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
+		{
+			if( strlen(buff) > 2 )
+			{
+				puts( "Not a valid input" );
+				continue;
+			}
+
+			int err = sscanf(buff, "%d", &room);
+			if( err != 1 || room < 1 || room > res_lookup_size )
+			{
+				puts( "Invalid room id.\n" );
+				puts( "The following rooms are available" );
+				crr_print_menu( rooms, roomlookups, res_lookup_size );
+				puts( "Press enter to go back." );
+				continue;
+			}
+			room--;	// Make 0 offset
+			char* roomname;
+			if( roomlookups )
+				roomname = rooms[ roomlookups[room] ];
+
+			else
+				roomname = rooms[room];
+
+			reservation res = new_reservation( roomname );
+			reservation* conflict = resVect_add( &resList, res );
+			if( conflict )
+			{
+				puts( "There was a conflicting reservation:" );
+				res_print_reservation( conflict );
+				printf( "The following rooms are available on %s.\n", searchbuff );
+				crr_print_menu( rooms, roomlookups, res_lookup_size );
+				puts( "Press enter to go back." );
+				continue;
+			} else {
+				puts( "Your reservation has been added!" );
+				break;
+			}
+		}
+
+		if( roomlookups )
+			free( roomlookups );
+		break;
+	}
 }
 #define SELECT( function ) function( &resList, key )
 // main function
