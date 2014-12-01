@@ -163,7 +163,6 @@ reservation* resVect_add( resVect* v, reservation res )
 		if( !(v->data) )
 		{
 			ERROR_RES( stderr, "Error allocating memory adding a reservation" );
-			// puts( "Error adding a reservation. Quitting the program." );
 			snprintf( RES_ERROR_STR, BUFF, "Error adding a reservation. Quitting the program." );
 			exit(1);
 		}
@@ -176,7 +175,6 @@ reservation* resVect_add( resVect* v, reservation res )
 		if( !(v->data) )
 		{
 			ERROR_RES( stderr, "Error allocating memory adding a reservation" );
-			// puts( "Error adding a reservation. Quitting the program." );
 			snprintf( RES_ERROR_STR, BUFF, "Error adding a reservation. Quitting the program." );
 			exit(1);
 		}
@@ -193,9 +191,7 @@ void resVect_set( resVect* v, int index, reservation res )
 {
 	if( index >= v->count || index < 0 )
 	{
-		// ERROR_RES( stderr, "index out of bounds" );
 		fprintf( stderr, "%s:%d: index out of bounds\n", __FUNCTION__, __LINE__ );
-		// puts( "Error deleting a reservation. Quitting the program" );
 		snprintf( RES_ERROR_STR, BUFF, "Error inserting a reservation. Quitting the program." );
 		exit(1);
 	}
@@ -206,9 +202,7 @@ reservation* resVect_get( resVect* v, int index )
 {
 	if( index >= v->count || index < 0 )
 	{
-		// ERROR_RES( stderr, "index out of bounds" );
 		fprintf( stderr, "%s:%d: index out of bounds\n", __FUNCTION__, __LINE__ );
-		// puts( "Error deleting a reservation. Quitting the program" );	
 		snprintf( RES_ERROR_STR, BUFF, "Error retrieving a reservation. Quitting the program." );
 		exit(1);
 	}
@@ -220,11 +214,8 @@ void resVect_delete( resVect* v, int index )
 {
 	if( index >= v->count || index < 0 )
 	{
-		// ERROR_RES( stderr, "index out of bounds" );
 		fprintf( stderr, "%s:%d: index out of bounds\n", __FUNCTION__, __LINE__ );
-		// puts( "Error deleting a reservation. Quitting the program" );
 		snprintf( RES_ERROR_STR, BUFF, "Error deleting a reservation. Quitting the program." );
-		// RES_ERROR_STR = "Error deleting a reservation. Quitting the program";
 		exit(1);
 	}
 	for( int i = index; i < v->count - 1; i++ )
@@ -245,7 +236,6 @@ void resVect_write_file( resVect* v, char* filename )
 	FILE* fp;
 	fp = fopen( filename, "w" );
 	fwrite( v->data, sizeof(reservation), v->count, fp );
-	// printf( "Writing to file %s with count %d\n", filename, v->count );
 	fclose( fp );
 }
 
@@ -262,7 +252,6 @@ void resVect_read_file( resVect* v, char* filename )
 	{
 		ERROR_RES( stderr, "index out of bounds" );
 		snprintf( RES_ERROR_STR, BUFF, "Error reading reservations. Quitting the program." );
-		// puts( "Error reading reservations. Quitting the program" );
 		exit(1);
 	}
 
@@ -280,7 +269,6 @@ void resVect_read_file( resVect* v, char* filename )
 	{
 		fputs( "Error allocating memory reading reservations from file.", stderr );
 		snprintf( RES_ERROR_STR, BUFF, "Error reading reservations. Quitting the program." );
-		// puts( "Error reading reservations from file. Quitting the program." );
 		exit(1);
 	}
 
@@ -288,9 +276,8 @@ void resVect_read_file( resVect* v, char* filename )
 	{
 		ERROR_RES( stderr, "Short read of data: fread");
 		snprintf( RES_ERROR_STR, BUFF, "Error reading reservations. Quitting the program." );
-		// puts( "Error reading reservations. Quitting the program" );
 		exit(1);
-		// fprintf( stderr, "%s:%d: Short read of data.\n", __FUNCTION__, __LINE__);
+
 	}
 
 	qsort( v->data, v->count, sizeof(reservation), res_sort_name_time );
@@ -319,7 +306,7 @@ int resVect_bsearch_room_cmp( const void* key, const void* element )
 {
 	const char* k = (const char*)key;
 	const char* ele= *(const char**)element;
-	// printf( "Inside bsearch_cmp: key is %s, with element %s\n", k, ele );
+
 	return strcmp( k, ele );
 }
 
@@ -327,19 +314,16 @@ int resVect_bsearch_time_cmp( const void* key, const void* element )
 {
 	const time_t* k = (const time_t*)key;
 	const reservation* res = (const reservation*)element;
-	// printf( "Key time is: %li\n", *k );
+
 	time_t lower = res->starttime;
 	time_t upper = res->endtime;
-	// printf( "Reservation room: %s, start time: %li, end time: %li\n", res->roomname, lower, upper );
+
 	if( *k < lower )
 	{
-		// puts( "Key is lower than starttime" );
 		return -1;
 	} else if( *k > upper ) {
-		// puts( "Key is higher than endtime" );
 		return 1;
 	} else if( *k >= lower && *k <= upper ) {
-		// puts( "MATCH" );
 		return 0;
 	}
 }
@@ -368,26 +352,15 @@ void resVect_check_consistency( resVect* v, char** rooms, int numrooms )
 {
 	char** checkname;
 
-	// checkname = bsearch( "Billiard Room", rooms, numrooms, sizeof(char*), resVect_bsearch_room_cmp );
-	// for( int i = 0; i < numrooms; i++)
-	// {
-	// 	printf( "Room %s at index %d\n", rooms[i], i );
-	// }
-	// printf( "Checkname is %s\n", checkname );
 	for( int i = 0; i < v->count; i++ )
 	{
 		checkname = bsearch( v->data[i].roomname, rooms, numrooms, sizeof(char*), resVect_bsearch_room_cmp );
-		
-		// printf( "Checkname address at %s\n", checkname[0] );
-		// size_t index = (checkname - rooms);
-		// printf( "index at %li\n", index );
 
 		if( checkname == NULL )
 		{
 			// ERROR_RES( stderr, "File inconsistency" );
 			fprintf( stderr, "%s:%d: File incosistency. %s is missing from rooms.dat\n", __FUNCTION__, __LINE__, v->data[i].roomname );
 			snprintf( RES_ERROR_STR, BUFF, "Inconsistent data in the reservation file. Quitting the program." );
-			// puts( "Inconsistent data in the reservation file. Quitting the program" );
 			exit(1);		
 		}
 	}
@@ -396,12 +369,6 @@ void resVect_check_consistency( resVect* v, char** rooms, int numrooms )
 size_t* resVect_select_valid_rooms( resVect* v, time_t key, char** rooms, int numrooms )
 {
 	qsort( v->data, v->count, sizeof(reservation), res_sort_time_name );
-
-	// for( int i = 0; i < v->count; i++ )
-	// {
-	// 	res_print_reservation( resVect_get( v, i ) );
-	// }
-
 	time_t timekey = to_utc( key );
 
 
@@ -414,8 +381,6 @@ size_t* resVect_select_valid_rooms( resVect* v, time_t key, char** rooms, int nu
 	size_t res_address;
 	size_t* available = NULL;
 	if( reserved != NULL ) {
-		// puts( "Found a reserved room." );
-		// printf( "reservation is at address %li\n", reserved - v->data );
 		char** foundroom = bsearch( reserved->roomname, rooms, numrooms, sizeof(char*), resVect_bsearch_room_cmp );
 		room_address = foundroom - rooms;
 		res_address = reserved - v->data;
@@ -423,11 +388,8 @@ size_t* resVect_select_valid_rooms( resVect* v, time_t key, char** rooms, int nu
 
 		// Go left
 		size_t lefti = res_address - 1;
-		// printf( "i is %li\n", lefti);
-		// printf( "i: %li, starttime: %d, endtime: %d\n", lefti, v->data[lefti].starttime, v->data[lefti].endtime );
 		while( lefti >= 0 && timekey >= v->data[lefti].starttime && timekey <= v->data[lefti].endtime )
 		{
-			// puts( "INSIDE WHILE LOOP");
 			foundroom = bsearch( v->data[lefti].roomname, rooms, numrooms, sizeof(char*), resVect_bsearch_room_cmp );
 			room_address = foundroom - rooms;
 			reservedrooms[index++] = room_address;			
@@ -450,7 +412,6 @@ size_t* resVect_select_valid_rooms( resVect* v, time_t key, char** rooms, int nu
 		{
 			fputs( "Error allocating memory to return available rooms.", stderr );
 			snprintf( RES_ERROR_STR, BUFF, "Error retrieving available reservations. Quitting the program." );
-			// puts( "Error reading reservations from file. Quitting the program." );
 			exit(1);
 		}
 
@@ -462,25 +423,8 @@ size_t* resVect_select_valid_rooms( resVect* v, time_t key, char** rooms, int nu
 
 		}
 		res_lookup_size = avail_index;
-		// printf( "Number of reserved rooms %d\n", index );
-		// puts( "PRINTING OUT FOUND INDEXES\n" );
-		// for( int i = 0; i < index; i++ )
-		// {
-
-		// 	printf( "Room %s is reserved.\n", rooms[ reservedrooms[i] ]);
-		// }
-		// puts( "END INDEX PRINTING" );
-		// puts( "\nPRINTING OUT AVAILABLE ROOMS\n" );
-		// for( int i = 0; i < avail_index; i++ )
-		// {
-
-		// 	printf( "Room %s are available.\n", rooms[ available[i] ]);
-		// }
-		// puts( "END AVAILABLE PRINTING" );
-		// res_print_reservation( reserved );
 	}
 
-	// qsort( v->data, v->count, sizeof(reservation), res_sort_name_time );
 	return available;
 }
 
@@ -492,8 +436,6 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 	{
 		res_print_reservation( resVect_get( v, i ) );
 	}
-
-	// time_t day_key = to_utc( key );
 
 	int day_count = 0;
 	int day_size = 5;
@@ -520,8 +462,6 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 		res_on_day[day_count++] = res_index;
 
 		// Go left
-		// printf( "i is %li\n", lefti);
-		// printf( "i: %li, starttime: %d, endtime: %d\n", lefti, v->data[lefti].starttime, v->data[lefti].endtime );
 		time_t res_t;
 		struct tm res_tm;
 		struct tm day_key_tm;
@@ -538,7 +478,6 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 				puts( "LEFT: DAYS NOT EQUAL" );
 				break;
 			}
-			// puts( "INSIDE WHILE LOOP");
 			if( day_count == day_size )
 			{
 				day_size *= 2;
@@ -551,10 +490,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 				}
 			}
 			printf( "ADDING INDEX %li\n", lefti );
-			res_on_day[day_count++] = lefti;
-			// foundroom = bsearch( v->data[lefti].roomname, rooms, numrooms, sizeof(char*), resVect_bsearch_room_cmp );
-			// room_index = foundroom - rooms;
-			// reservedrooms[index++] = room_index;			
+			res_on_day[day_count++] = lefti;		
 			lefti--;
 		}
 
@@ -571,7 +507,6 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 				puts( "LEFT: DAYS NOT EQUAL" );
 				break;
 			}
-			// puts( "INSIDE WHILE LOOP");
 			if( day_count == day_size )
 			{
 				day_size *= 2;
