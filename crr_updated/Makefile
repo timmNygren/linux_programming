@@ -9,9 +9,9 @@ all: crr
 #	stringstring: stringstring.c
 #	wordat: wordat.c
 
-crr: crr.o reservation.o crr_utils.o
+crr: crr.o reservation.o crr_utils.o search_sort_utils.o
 
-crr.o reservation.o crr_utils.o: reservation.h crr_utils.h
+crr.o reservation.o crr_utils.o: reservation.h crr_utils.h search_sort_utils.h
 
 charcell: ${LIBS}
 #charcell: charcell.o

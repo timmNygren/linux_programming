@@ -439,6 +439,19 @@ void day_search( void )
 		free( roomlookups );
 }
 
+void room_serach( void )
+{
+	char buff[BUFFLEN];
+	size_t* roomlookups = NULL;
+
+	puts( "Enter a room to check reservations over all days. Press enter to go back." );
+	while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
+	{
+		buff[strlen(buff)-1] = '\0';
+		
+	}
+}
+
 void init( int argc, char* argv[] )
 {
 	if( argc < 2 || argc > 3 )

@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "reservation.h"
+#include "search_sort_utils.h"
 #include "crr_utils.h"
 
 const char* MAIN_MENU[] = { "What would you like to do today?\n", "1. Create a reservation at a particular time.\n", \
@@ -182,7 +183,7 @@ reservation* crr_update_reservation( char* roomname, resVect* v, int res_pos )
 	}
 	desc = get_desc();
 	reservation res = create_reservation( roomname, startTime, endTime, desc );
-	check = bsearch( &res, v->data, v->count, sizeof(reservation), resVect_bsearch_conflict );
+	check = bsearch( &res, v->data, v->count, sizeof(reservation), bsearch_conflict );
 	res_print_reservation( &res );
 	if( check )
 		res_print_reservation( check );
