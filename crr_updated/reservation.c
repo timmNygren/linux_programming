@@ -269,6 +269,11 @@ size_t* resVect_select_valid_rooms( resVect* v, time_t key, char** rooms, int nu
 		res_address = reserved - v->data;
 		reservedrooms[index++] = room_address;
 
+		/*
+		 * Bsearch is used on each room reservation that contains the given time key. This is to determine
+		 * the address in the rooms array to appropriately show the available rooms at the end.
+		 */
+
 		// Go left
 		size_t lefti = res_address - 1;
 		while( lefti >= 0 && timekey >= v->data[lefti].starttime && timekey <= v->data[lefti].endtime )
@@ -386,7 +391,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 			printf( "RIGHT: Key's day: %li, current reservation day: %li\n", day_key_tm.tm_wday, res_tm.tm_wday );
 			if( res_tm.tm_wday != day_key_tm.tm_wday )
 			{
-				puts( "LEFT: DAYS NOT EQUAL" );
+				puts( "RIGHT: DAYS NOT EQUAL" );
 				break;
 			}
 			if( day_count == day_size )
