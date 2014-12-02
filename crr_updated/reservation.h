@@ -40,5 +40,6 @@ void resVect_read_file( resVect* v, char* filename );
 void resVect_check_consistency( resVect* v, char** rooms, int numrooms );
 size_t* resVect_select_valid_rooms( resVect* v, time_t key, char** rooms, int numrooms );
 size_t* resVect_select_res_day( resVect* v, time_t key );
+size_t* resVect_select_res_room( resVect* v, char* key );
 
 #endif

@@ -7,6 +7,7 @@
 
 #include "reservation.h"
 #include "crr_utils.h"
+#include "search_sort_utils.h"
 
 // #define BUFFLEN 1024
 // #define ROOM_NAME_LEN 49
@@ -261,9 +262,9 @@ void setup_reservation( void )
 		strncpy( searchbuff, buff, 64 );
 		if( roomlookups )
 		{
-			crr_print_menu( rooms, roomlookups, res_lookup_size );
+			crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
 		} else {
-			print_rooms( rooms, numRooms );
+			print_rooms( rooms, numRooms, 1 );
 			res_lookup_size = numRooms;
 		}
 		puts( "Press enter to go back." );
@@ -281,7 +282,7 @@ void setup_reservation( void )
 			{
 				puts( "Invalid room id.\n" );
 				puts( "The following rooms are available" );
-				crr_print_menu( rooms, roomlookups, res_lookup_size );
+				crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
 				puts( "Press enter to go back." );
 				continue;
 			}
@@ -300,7 +301,7 @@ void setup_reservation( void )
 				puts( "There was a conflicting reservation:" );
 				res_print_reservation( conflict );
 				printf( "The following rooms are available on %s.\n", searchbuff );
-				crr_print_menu( rooms, roomlookups, res_lookup_size );
+				crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
 				puts( "Press enter to go back." );
 				continue;
 			} else {
@@ -323,7 +324,7 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 	{
 		int choice = 0;
 
-		crr_print_rooms( &resList, roomlookups, res_lookup_size );
+		crr_print_reservations( &resList, roomlookups, res_lookup_size );
 		puts( "\nPick a reservation." );
 		while( fgets( buff, BUFFLEN, stdin ) )
 		{
@@ -331,7 +332,7 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 			if( err != 1 || choice < 1 || choice > res_lookup_size )
 			{
 				puts( "Invalid choice." );
-				crr_print_rooms( &resList, roomlookups, res_lookup_size );
+				crr_print_reservations( &resList, roomlookups, res_lookup_size );
 				puts( "\nPick a reservation." );
 				continue;
 			}
@@ -369,7 +370,7 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 		if( update == 1 )
 		{
 			puts( "Pick a room:" );
-			print_rooms( rooms, numRooms );
+			print_rooms( rooms, numRooms, 1 );
 			while( fgets( buff, BUFFLEN, stdin ) )
 			{
 				int err = sscanf(buff, "%d", &room);
@@ -377,7 +378,7 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 				{
 					puts( "Invalid room id." );
 					puts( "The following rooms are:" );
-					print_rooms( rooms, numRooms );
+					print_rooms( rooms, numRooms, 1 );
 					continue;
 				}
 				room--;	// Make 0 offset
@@ -437,19 +438,38 @@ void day_search( void )
 	review_update_or_delete( roomlookups );
 	if( roomlookups )
 		free( roomlookups );
+	qsort( resList.data, resList.count, sizeof(reservation), sort_name_time );
 }
 
-void room_serach( void )
+void room_search( void )
 {
-	char buff[BUFFLEN];
+	char buff[ROOM_NAME_LEN];
+	char* key = NULL;
 	size_t* roomlookups = NULL;
+	char** roomCheck = NULL;
 
 	puts( "Enter a room to check reservations over all days. Press enter to go back." );
-	while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
+	print_rooms( rooms, numRooms, 0 );
+	while( fgets( buff, ROOM_NAME_LEN, stdin ) && buff[0] != '\n' )
 	{
 		buff[strlen(buff)-1] = '\0';
-		
+		roomCheck = bsearch( buff, rooms, numRooms, sizeof(char*), bsearch_room_cmp );
+		if( roomCheck )
+		{
+			break;
+		}
+		puts( "Invalid room." );
+		puts( "Enter a room to check reservations over all days. Press enter to go back." );
+		print_rooms( rooms, numRooms, 0 );
 	}
+	printf( "Room chosen was %s\n", rooms[roomCheck - rooms] );
+	key = calloc( ROOM_NAME_LEN, sizeof(char) );
+	strncpy( key, buff, ROOM_NAME_LEN );
+
+	if( key )
+		free( key );
+	if( roomlookups )
+		free( roomlookups );
 }
 
 void init( int argc, char* argv[] )
@@ -488,8 +508,9 @@ int main( int argc, char* argv[] )
 	}
 
 	puts("\n\n");
-	setup_reservation();
-	// day_search();
+	// setup_reservation();
+	day_search();
+	// room_search();
 
 	puts("\n\n");
 	for( int i = 0; i < resVect_count( &resList ); i++ )

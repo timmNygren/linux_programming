@@ -132,7 +132,7 @@ reservation* resVect_add( resVect* v, reservation res )
 	v->count++;
 
 	qsort( v->data, v->count, sizeof(reservation), sort_name_time );
-	return check;
+	return NULL;
 }
 
 void resVect_set( resVect* v, int index, reservation res )
@@ -420,4 +420,9 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 		puts( "RES_ON_DAY is NULL" );
 	res_lookup_size = day_count;
 	return res_on_day;
+}
+
+size_t* resVect_select_res_room( resVect* v, char* key )
+{
+
 }

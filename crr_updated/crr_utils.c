@@ -36,16 +36,19 @@ void print_format_list( void )
 	fflush( stdout );
 }
 
-void crr_print_menu( char** menu, size_t* lookups, int lookups_size )
+void crr_print_menu( char** menu, size_t* lookups, int lookups_size, int printNums )
 {
 	for( int i = 0; i < lookups_size; i++)
 	{
-		printf( "%d: %s\n", i+1, menu[lookups[i]] );
+		if( printNums )
+			printf( "%d: %s\n", i+1, menu[lookups[i]] );
+		else
+			printf( "%s\n", menu[lookups[i]] );
 	}
 	fflush( stdout );
 }
 
-void print_rooms( char** roomnames, int numRooms )
+void print_rooms( char** roomnames, int numRooms, int printNums )
 {
 	int i = 0;
 	size_t view[numRooms];
@@ -53,7 +56,7 @@ void print_rooms( char** roomnames, int numRooms )
 	{
 		view[i] = i;
 	}
-	crr_print_menu( roomnames, view, numRooms );
+	crr_print_menu( roomnames, view, numRooms, printNums );
 }
 
 time_t get_start_time( void )
@@ -197,7 +200,7 @@ reservation* crr_update_reservation( char* roomname, resVect* v, int res_pos )
 	return NULL;
 }
 
-void crr_print_rooms( resVect* v, size_t* lookups, int lookups_size )
+void crr_print_reservations( resVect* v, size_t* lookups, int lookups_size )
 {
 	for( int i = 0; i < lookups_size; i++ )
 	{
