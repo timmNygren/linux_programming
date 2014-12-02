@@ -51,7 +51,6 @@ reservation* update_reservation( reservation* oldreservation, const char* newroo
 
 void res_print_reservation( reservation* res )
 {
-	// puts( "Not implemented yet" );
 	char buff1[BUFF];
 	char buff2[BUFF];
 
@@ -84,40 +83,6 @@ time_t to_utc( time_t t )
 	return t;
 }
 
-// int res_sort_name_time( const void* left, const void* right )
-// {
-// 	const reservation *mleft = (const reservation*)left;
-// 	const reservation *mright = (const reservation*)right;
-// 	if( strcmp( mleft->roomname, mright->roomname ) < 0 )
-// 	{
-// 		return -1;
-// 	} else if( strcmp( mleft->roomname, mright->roomname ) > 0 ) {
-// 		return 1;
-// 	} else {
-// 		size_t left_t = mleft->starttime;
-// 		size_t right_t = mright->starttime;
-// 		if( left_t < right_t )
-// 			return -1;
-// 		else if( left_t > right_t )
-// 			return 1;
-// 	} 
-// 	return 0;
-// }
-
-// int res_sort_time_name( const void* left, const void* right )
-// {
-// 	const reservation *mleft = (const reservation*)left;
-// 	const reservation *mright = (const reservation*)right;
-// 	if( mleft->starttime < mright->starttime ) //&& mleft->endtime < mright->endtime && mleft->endtime <= mright->starttime )
-// 	{
-// 		return -1;
-// 	} else if( mleft->starttime > mright->starttime ) { // && mleft->endtime > mright->endtime && mleft->endtime > mright->starttime ) {
-// 		return 1;
-// 	} else {
-// 		return ( strcmp( mleft->roomname, mright->roomname) );
-// 	}
-// }
-
 void resVect_init( resVect* v )
 {
 	v->data = NULL;
@@ -130,33 +95,15 @@ int resVect_count( resVect* v )
 	return v->count;
 }
 
-// int resVect_bsearch_conflict( const void* key, const void* element )
-// {
-// 	const reservation* k = (const reservation*)key;
-// 	const reservation* res = (const reservation*)element;
-
-// 	if( strcmp( k->roomname, res->roomname ) < 0 )
-// 		return -1;
-// 	else if( strcmp( k->roomname, res->roomname ) > 0 )
-// 		return 1;
-// 	else {
-// 		if( k->endtime <= res->starttime )
-// 			return -1;
-// 		else if( k->starttime >= res->endtime )
-// 			return 1;
-// 	}
-// 	return 0;
-// }
-
 reservation* resVect_add( resVect* v, reservation res )
 {
-	// check new reservation
+
 	reservation* check = bsearch( &res, v->data, v->count, sizeof(reservation), bsearch_conflict );
 
 	if( check )
 		return check;
 
-
+	// Add non-conflict reservation
 	if( v->size == 0 )
 	{
 		v->size = 5;
@@ -285,70 +232,6 @@ void resVect_read_file( resVect* v, char* filename )
 	fclose( fp );
 }
 
-// int resVect_sort_int( const void* left, const void* right )
-// {
-// 	const int mleft = *(const int*)left;
-// 	const int mright = *(const int*)right;
-// 	return mleft - mright;
-// }
-
-// int resVect_sort_size_t( const void* left, const void* right )
-// {
-// 	const size_t mleft = *(const size_t*)left;
-// 	const size_t mright = *(const size_t*)right;
-// 	if( mleft < mright )
-// 		return -1;
-// 	else if( mleft > mright )
-// 		return 1;
-// 	return 0;
-// }
-
-// int resVect_bsearch_room_cmp( const void* key, const void* element )
-// {
-// 	const char* k = (const char*)key;
-// 	const char* ele= *(const char**)element;
-
-// 	return strcmp( k, ele );
-// }
-
-// int resVect_bsearch_time_cmp( const void* key, const void* element )
-// {
-// 	const time_t* k = (const time_t*)key;
-// 	const reservation* res = (const reservation*)element;
-
-// 	time_t lower = res->starttime;
-// 	time_t upper = res->endtime;
-
-// 	if( *k < lower )
-// 	{
-// 		return -1;
-// 	} else if( *k > upper ) {
-// 		return 1;
-// 	} else if( *k >= lower && *k <= upper ) {
-// 		return 0;
-// 	}
-// }
-
-// int resVect_bsearch_day_cmp( const void* key, const void* element )
-// {
-// 	const time_t* k = (const time_t*)key;
-// 	const reservation* res = (const reservation*)element;
-// 	time_t res_t_start = to_local( res->starttime );
-// 	time_t res_t_end = to_local( res->endtime );
-// 	struct tm restm_start;
-// 	struct tm restm_end;
-// 	localtime_r( &res_t_start, &restm_start );
-// 	localtime_r( &res_t_end, &restm_end );
-// 	struct tm ktm;
-// 	localtime_r( k, &ktm );
-
-// 	if( ktm.tm_wday < restm_start.tm_wday )
-// 		return -1;
-// 	else if( ktm.tm_wday > restm_end.tm_wday )
-// 		return 1;
-// 	return 0;
-// }
-
 void resVect_check_consistency( resVect* v, char** rooms, int numrooms )
 {
 	char** checkname;
@@ -359,7 +242,6 @@ void resVect_check_consistency( resVect* v, char** rooms, int numrooms )
 
 		if( checkname == NULL )
 		{
-			// ERROR_RES( stderr, "File inconsistency" );
 			fprintf( stderr, "%s:%d: File incosistency. %s is missing from rooms.dat\n", __FUNCTION__, __LINE__, v->data[i].roomname );
 			snprintf( RES_ERROR_STR, BUFF, "Inconsistent data in the reservation file. Quitting the program." );
 			exit(1);		
@@ -444,7 +326,6 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 	reservation* res = NULL;
 
 	res = bsearch( &key, v->data, v->count, sizeof(reservation), bsearch_day_cmp );
-
 
 	size_t res_index;
 	if( res != NULL ) {

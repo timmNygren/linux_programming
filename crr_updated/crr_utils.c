@@ -104,7 +104,6 @@ time_t get_end_time( void )
 	fflush( stdout );
 	while( fgets( buf, BUFFLEN, stdin ) )
 	{
-		// fgets( buf, BUFFLEN, stdin );
 		buf[strlen(buf) - 1] = '\0';
 		err = getdate_r( buf, &tempTM );
 		if( err == 7 || err ==8 )

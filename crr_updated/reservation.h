@@ -30,7 +30,6 @@ typedef struct Reservation_Vector {
 
 void resVect_init( resVect* v );
 int resVect_count( resVect* v );
-// int resVect_bsearch_conflict( const void* key, const void* element );
 reservation* resVect_add( resVect* v, reservation res );
 void resVect_set( resVect* v, int index, reservation res );
 reservation* resVect_get( resVect* v, int index );
@@ -38,7 +37,6 @@ void resVect_delete( resVect* v, int index );
 void resVect_free( resVect* v );
 void resVect_write_file( resVect* v, char* filename );
 void resVect_read_file( resVect* v, char* filename );
-// int resVect_bsearch_room_cmp( const void* key, const void* element );
 void resVect_check_consistency( resVect* v, char** rooms, int numrooms );
 size_t* resVect_select_valid_rooms( resVect* v, time_t key, char** rooms, int numrooms );
 size_t* resVect_select_res_day( resVect* v, time_t key );

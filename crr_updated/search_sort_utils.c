@@ -9,10 +9,10 @@ int sort_name_time( const void* left, const void* right )
 {
 	const reservation *mleft = (const reservation*)left;
 	const reservation *mright = (const reservation*)right;
-	if( strcmp( mleft->roomname, mright->roomname ) < 0 )
+	if( strcasecmp( mleft->roomname, mright->roomname ) < 0 )
 	{
 		return -1;
-	} else if( strcmp( mleft->roomname, mright->roomname ) > 0 ) {
+	} else if( strcasecmp( mleft->roomname, mright->roomname ) > 0 ) {
 		return 1;
 	} else {
 		size_t left_t = mleft->starttime;
@@ -35,7 +35,7 @@ int sort_time_name( const void* left, const void* right )
 	} else if( mleft->starttime > mright->starttime ) { // && mleft->endtime > mright->endtime && mleft->endtime > mright->starttime ) {
 		return 1;
 	} else {
-		return ( strcmp( mleft->roomname, mright->roomname) );
+		return ( strcasecmp( mleft->roomname, mright->roomname) );
 	}
 }
 
@@ -62,7 +62,7 @@ int bsearch_room_cmp( const void* key, const void* element )
 	const char* k = (const char*)key;
 	const char* ele= *(const char**)element;
 
-	return strcmp( k, ele );
+	return strcasecmp( k, ele );
 }
 
 int bsearch_time_cmp( const void* key, const void* element )
@@ -108,9 +108,9 @@ int bsearch_conflict( const void* key, const void* element )
 	const reservation* k = (const reservation*)key;
 	const reservation* res = (const reservation*)element;
 
-	if( strcmp( k->roomname, res->roomname ) < 0 )
+	if( strcasecmp( k->roomname, res->roomname ) < 0 )
 		return -1;
-	else if( strcmp( k->roomname, res->roomname ) > 0 )
+	else if( strcasecmp( k->roomname, res->roomname ) > 0 )
 		return 1;
 	else {
 		if( k->endtime <= res->starttime )
