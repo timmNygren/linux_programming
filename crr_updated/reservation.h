@@ -41,5 +41,6 @@ void resVect_check_consistency( resVect* v, char** rooms, int numrooms );
 size_t* resVect_select_room_at_time( resVect* v, time_t key, char** rooms, int numrooms );
 size_t* resVect_select_res_day( resVect* v, time_t key );
 size_t* resVect_select_res_room( resVect* v, char* key );
+size_t* resVect_select_res_desc( resVect* v, char* key );
 
 #endif

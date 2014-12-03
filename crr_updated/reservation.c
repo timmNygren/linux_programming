@@ -522,12 +522,54 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 
 		qsort( resRooms, resCount, sizeof(size_t), sort_int );
 	}
-	puts( "THE FUCK" );
 	if( resRooms )
 		puts( "RESROOMS has rooms" );
 	else
 		puts( "RESROOMS is NULL" );
 	res_lookup_size = resCount;
+
+	return resRooms;
+}
+
+size_t* resVect_select_res_desc( resVect* v, char* key )
+{
+	int resCount = 0;
+	int resSize = 0;
+	size_t* resRooms = NULL;
+	for( size_t i = 0; i < v->count; i++)
+	{
+		// puts( "Searching a description" );
+		if( strcasestr( v->data[i].description, key ) )
+		{
+			// puts( "FOUND A DESCRIPTION" );
+			if( resSize == 0 )
+			{
+				resSize = 5;
+				resRooms = calloc( resSize, sizeof(size_t) );
+				if( !resRooms )
+				{
+					fputs( "Error allocating memory to return reservations for a word search in the description.", stderr );
+					snprintf( RES_ERROR_STR, BUFF, "Error retrieving available reservations for a word search in the description. Quitting the program." );
+					exit(1);
+				}
+			}
+
+			if( resCount == resSize )
+			{
+				resSize *= 2;
+				resRooms = realloc( resRooms, sizeof(size_t) * resSize );
+				if( !resRooms )
+				{
+					fputs( "Error reallocating memory to return reservations for a particular room.", stderr );
+					snprintf( RES_ERROR_STR, BUFF, "Error retrieving available reservations for a particular room. Quitting the program." );
+					exit(1);	
+				}
+			}
+			resRooms[resCount++] = i;
+		}
+	}
+	res_lookup_size = resCount;
+	qsort( resRooms, resCount, sizeof(size_t), sort_int );
 
 	return resRooms;
 }

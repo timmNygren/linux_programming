@@ -11,9 +11,9 @@
 
 // #define BUFFLEN 1024
 // #define ROOM_NAME_LEN 49
-#define DAY_SEARCH 0
-#define ROOM_SEARCH 1
-#define DESC_SEARCH 2
+// #define DAY_SEARCH 0
+// #define ROOM_SEARCH 1
+// #define DESC_SEARCH 2
 
 char* reservationfilename;
 char** rooms;
@@ -148,7 +148,7 @@ void add_reservations( void )
 
 	for( int i = 0; i < numRooms - 4; i+= 2 )
 	{
-		resVect_add( &resList, create_reservation( rooms[i], tstart, tend, desc1 ) );
+		resVect_add( &resList, create_reservation( rooms[i], tstart, tend, "Birthday partay" ) );
 	}
 // End first
 
@@ -488,6 +488,48 @@ void room_search( void )
 		free( roomlookups );
 }
 
+void desc_search( void )
+{
+	char buff[DESC_SIZE];
+	char* key = NULL;
+	size_t* roomlookups = NULL;
+
+	puts( "Enter a word to search reservation descriptions. Press enter to go back." );
+	// print_rooms( rooms, numRooms, 0 );
+
+	fgets( buff, DESC_SIZE, stdin );
+
+	if( buff[0] == '\n' )
+		return;
+
+	buff[strlen(buff)-1] = '\0';
+		
+	key = calloc( DESC_SIZE, sizeof(char) );
+	if( !key )
+	{
+		fputs( "Could not allocate memory for key in description search.", stderr );
+		puts( "Something went wrong searching the reservation descriptions. Exiting the program." );
+		exit(1);
+	}
+	strncpy( key, buff, DESC_SIZE );
+
+	roomlookups = SELECT( resVect_select_res_desc );
+
+
+	// for( int i = 0; i < res_lookup_size; i++ )
+	// {
+	// 	printf( "Reservation indicies are %li\n", roomlookups[i] );
+	// 	// crr_print_reservations( &resList, roomlookups, res_lookup_size );
+	// }
+
+	review_update_or_delete( roomlookups );
+
+	if( key )
+		free( key );
+	if( roomlookups )
+		free( roomlookups );
+}
+
 void init( int argc, char* argv[] )
 {
 	if( argc < 2 || argc > 3 )
@@ -526,7 +568,8 @@ int main( int argc, char* argv[] )
 	puts("\n\n");
 	// setup_reservation();
 	// day_search();
-	room_search();
+	// room_search();
+	desc_search();
 
 	puts("\n\n");
 	for( int i = 0; i < resVect_count( &resList ); i++ )
