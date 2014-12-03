@@ -359,7 +359,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 			res_t = v->data[lefti].starttime;
 			res_t = to_local( res_t );
 			localtime_r( &res_t, &res_tm );
-			printf( "LEFT: Key's day: %li, current reservation day: %li\n", day_key_tm.tm_wday, res_tm.tm_wday );
+			printf( "LEFT: Key's day: %d, current reservation day: %d\n", day_key_tm.tm_wday, res_tm.tm_wday );
 			if( res_tm.tm_wday != day_key_tm.tm_wday )
 			{
 				puts( "LEFT: DAYS NOT EQUAL" );
@@ -388,7 +388,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 			res_t = v->data[righti].starttime;
 			res_t = to_local( res_t );
 			localtime_r( &res_t, &res_tm );
-			printf( "RIGHT: Key's day: %li, current reservation day: %li\n", day_key_tm.tm_wday, res_tm.tm_wday );
+			printf( "RIGHT: Key's day: %d, current reservation day: %d\n", day_key_tm.tm_wday, res_tm.tm_wday );
 			if( res_tm.tm_wday != day_key_tm.tm_wday )
 			{
 				puts( "RIGHT: DAYS NOT EQUAL" );

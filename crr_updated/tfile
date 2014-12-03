@@ -3,7 +3,7 @@
 %A at %I:%M%p
 %d at %I%p
 %d at %I:%M%p
-%F %I%p
-%F at %I%p
-%F %I:%M%p
-%F at %I:%M%p
+%Y/%m/%d %I%p
+%Y/%m/%d at %I%p
+%Y/%m/%d %I:%M%p
+%Y/%m/%d at %I:%M%p
