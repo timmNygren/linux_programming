@@ -1,0 +1,2 @@
+TFILE=$PWD/tfile
+export DATEMSK=$TFILE

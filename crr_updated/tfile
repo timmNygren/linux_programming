@@ -1,0 +1,9 @@
+%A
+%A at %I%p
+%A at %I:%M%p
+%d at %I%p
+%d at %I:%M%p
+%F %I%p
+%F at %I%p
+%F %I:%M%p
+%F at %I:%M%p
