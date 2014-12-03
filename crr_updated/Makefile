@@ -1,30 +1,45 @@
+APPS=  crr
+APPS+= charcell-resize
+APPS+= charcell-signal-kip
+APPS+= charcell-atexit
+
 CFLAGS+= -g -D_GNU_SOURCE -std=c99
-LIBS=-lcurses
-all: crr
-#all: swc
+LIBS= -L. -lattachable_debugger
+#LDFLAGS+= -Wl, --no-as-needed
 
-#${APPS}: % : %.c
-# rule above turns into 
-#	stdfiles: stdfiles.c
-#	stringstring: stringstring.c
-#	wordat: wordat.c
+include Makefile.so
+include Makefile.hdeps
 
-crr: crr.o reservation.o crr_utils.o search_sort_utils.o
+all:: ${APPS}
 
-crr.o reservation.o crr_utils.o: reservation.h crr_utils.h search_sort_utils.h
 
-charcell: ${LIBS}
-#charcell: charcell.o
-#	${CC} ${LDFLAGS} -o charcell charcell.o -lcurses
+# the charcell application needs the ncurses library, the other apps don't
+charcell-resize: LIBS+=-lncurses
+charcell-signal-kip: LIBS+=-lncurses
+charcell-atexit: LIBS+=-lncurses
+charcell-signal-kip: charcell-utils.o
 
-charcell-resize: ${LIBS}
-#charcell-resize: charcell-resize.o
-#	${CC} ${LDFLAGS} -o charcell-resize charcell-resize.o -lcurses
 
-signal_example: signal_example.o signal_example_utils.o
+charcell-atexit: charcell-atexit.o charcell-atexit-keyhistory.o charcell-utils.o
+	
+clean:: 
+	${RM} ${APPS} *.o *~
 
+# a static-pattern rule for all APPS
+${APPS}: % : %.o
+	${CC} ${LDFLAGS} -o $@ $^ ${LIBS}
+
+# LDFLAGS - rule to build application to do linking
+# $@ - target you are building (ie. %)
+# $^ - all dependencies, unique (ie. swc.o swcutils.o)
+
+#SOFLAGS+= -shared
+#LD= cc
+# %.so:
+#	${LD} ${SOFLAGS} -o ${@F} $^ ${SOLIBS}
+# LD - linker
+# @F - just the target name itself, no path
+# 
 
 .PHONY: all clean
-clean:
-#	${RM} swc *.o
-	${RM} crr *.o
+
