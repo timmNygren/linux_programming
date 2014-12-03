@@ -153,14 +153,14 @@ void add_reservations( void )
 // End first
 
 /////
-	result = getdate_r("2014/12/26 at 06PM", &test);
+	result = getdate_r("2014/12/01 at 06PM", &test);
 	if( result != 0 )
 	{
 		printf( "%d: Error processing %s, with error code /%d/\n", __LINE__, "Wednesday", result ); 
 		exit(1);
 	}
 	tstart = mktime( &test );
-	result = getdate_r("2014/12/27 at 06PM", &test);
+	result = getdate_r("2014/12/02 at 06PM", &test);
 	if( result != 0 )
 	{
 		printf( "%d: Error processing %s, with error code /%d/\n", __LINE__, "Thursday", result ); 
@@ -256,7 +256,7 @@ void setup_reservation( void )
 		}
 		timekey = mktime( &brokendate );
 
-		size_t* roomlookups = resVect_select_valid_rooms( &resList, timekey, rooms, numRooms );
+		size_t* roomlookups = resVect_select_room_at_time( &resList, timekey, rooms, numRooms );
 
 		printf( "The following rooms are available on %s.\n", buff );
 		strncpy( searchbuff, buff, 64 );
@@ -438,7 +438,7 @@ void day_search( void )
 	review_update_or_delete( roomlookups );
 	if( roomlookups )
 		free( roomlookups );
-	qsort( resList.data, resList.count, sizeof(reservation), sort_name_time );
+	// qsort( resList.data, resList.count, sizeof(reservation), sort_name_time );
 }
 
 void room_search( void )
@@ -464,7 +464,23 @@ void room_search( void )
 	}
 	printf( "Room chosen was %s\n", rooms[roomCheck - rooms] );
 	key = calloc( ROOM_NAME_LEN, sizeof(char) );
+	if( !key )
+	{
+		fputs( "Could not allocate memory for key in room search.", stderr );
+		puts( "Something went wrong searching the given room. Exiting the program." );
+		exit(1);
+	}
 	strncpy( key, buff, ROOM_NAME_LEN );
+
+	roomlookups = SELECT( resVect_select_res_room );
+
+
+	// for( int i = 0; i < res_lookup_size; i++ )
+	// {
+	// 	printf( "Reservation indicies are %li\n", roomlookups[i] );
+	// 	// crr_print_reservations( &resList, roomlookups, res_lookup_size );
+	// }
+	review_update_or_delete( roomlookups );
 
 	if( key )
 		free( key );
@@ -509,8 +525,8 @@ int main( int argc, char* argv[] )
 
 	puts("\n\n");
 	// setup_reservation();
-	day_search();
-	// room_search();
+	// day_search();
+	room_search();
 
 	puts("\n\n");
 	for( int i = 0; i < resVect_count( &resList ); i++ )

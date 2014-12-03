@@ -65,6 +65,14 @@ int bsearch_room_cmp( const void* key, const void* element )
 	return strcasecmp( k, ele );
 }
 
+int bsearch_res_room_cmp( const void* key, const void* element )
+{
+	const char* k = (const char*)key;
+	const reservation* res = (const reservation*)element;
+
+	return strcasecmp( k, res->roomname );
+}
+
 int bsearch_time_cmp( const void* key, const void* element )
 {
 	const time_t* k = (const time_t*)key;

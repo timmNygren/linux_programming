@@ -249,7 +249,7 @@ void resVect_check_consistency( resVect* v, char** rooms, int numrooms )
 	}
 }
 
-size_t* resVect_select_valid_rooms( resVect* v, time_t key, char** rooms, int numrooms )
+size_t* resVect_select_room_at_time( resVect* v, time_t key, char** rooms, int numrooms )
 {
 	qsort( v->data, v->count, sizeof(reservation), sort_time_name );
 	time_t timekey = to_utc( key );
@@ -333,7 +333,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 	res = bsearch( &key, v->data, v->count, sizeof(reservation), bsearch_day_cmp );
 
 	size_t res_index;
-	if( res != NULL ) {
+	if( res ) {
 		puts( "Found a room on a day." );
 		printf( "reservation is at index %li\n", res - v->data );
 		res_print_reservation( res );
@@ -424,5 +424,110 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 
 size_t* resVect_select_res_room( resVect* v, char* key )
 {
+	qsort( v->data, v->count, sizeof(reservation), sort_name_time );
 
+	time_t timeNow = time( NULL );
+	int resCount = 0;
+	int resSize = 5;
+	size_t* resRooms = NULL;
+	reservation* res = NULL;
+
+	res = bsearch( key, v->data, v->count, sizeof(reservation), bsearch_res_room_cmp );
+
+	// if( res )
+	// 	puts( "found a reservation" );
+	// else
+	// 	puts( "didn't find a reservation" );
+
+	size_t resIndex;
+
+	if( res )
+	{
+		resRooms = calloc( resSize, sizeof(size_t) );
+		if( !resRooms )
+		{
+			fputs( "Error allocating memory to return reservations for a particular room.", stderr );
+			snprintf( RES_ERROR_STR, BUFF, "Error retrieving available reservations for a particular room. Quitting the program." );
+			exit(1);
+		}
+
+		resIndex = res - v->data;
+
+		// Bsearch may find a reservation in the past.
+		// We must account for that and search for the first reservation that is occurring or will occur
+		// in the near future
+		while( resIndex < v->count && timeNow >= v->data[resIndex].endtime )
+		{
+			resIndex++;
+		}
+
+		// Check to make sure we still have a reservation with a room that the user is looking for
+		if( strcasecmp( key, v->data[resIndex].roomname ) != 0 )
+		{
+			return NULL;
+		}
+
+		resRooms[resCount++] = resIndex;
+			
+		size_t lefti = resIndex - 1;
+		while( lefti >= 0 )
+		{
+			
+			if( strcasecmp( key, v->data[lefti].roomname ) != 0 || timeNow >= v->data[lefti].endtime )
+			{
+				puts( "LEFT: DAYS NOT EQUAL" );
+				break;
+			}
+			if( resCount == resSize )
+			{
+				resSize *= 2;
+				resRooms = realloc( resRooms, sizeof(size_t) * resSize );
+				if( !resRooms )
+				{
+					fputs( "Error reallocating memory to return reservations for a particular room.", stderr );
+					snprintf( RES_ERROR_STR, BUFF, "Error retrieving available reservations for a particular room. Quitting the program." );
+					exit(1);	
+				}
+			}
+			printf( "ADDING INDEX %li\n", lefti );
+			resRooms[resCount++] = lefti;		
+			lefti--;
+		}
+
+		// Go right
+		size_t righti = resIndex + 1;
+		while( righti < v->count )
+		{
+			if( strcasecmp( key, v->data[righti].roomname ) != 0 )
+			{
+				puts( "RIGHT: DAYS NOT EQUAL" );
+				break;
+			}
+			if( resCount == resSize )
+			{
+				resSize *= 2;
+				resRooms = realloc( resRooms, sizeof(size_t) * resSize );
+				if( !resRooms )
+				{
+					fputs( "Error reallocating memory to return reservations for a particular room.", stderr );
+					snprintf( RES_ERROR_STR, BUFF, "Error retrieving available reservations for a particular room. Quitting the program." );
+					exit(1);	
+				}
+			}
+			printf( "ADDING INDEX %li\n", righti );
+			resRooms[resCount++] = righti;
+
+			righti++;
+		}
+
+		qsort( resRooms, resCount, sizeof(size_t), sort_int );
+	}
+	puts( "THE FUCK" );
+	if( resRooms )
+		puts( "RESROOMS has rooms" );
+	else
+		puts( "RESROOMS is NULL" );
+	res_lookup_size = resCount;
+
+	return resRooms;
 }
