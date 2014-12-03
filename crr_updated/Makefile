@@ -21,7 +21,8 @@ charcell-signal-kip: charcell-utils.o
 
 
 charcell-atexit: charcell-atexit.o charcell-atexit-keyhistory.o charcell-utils.o
-	
+crr: crr.o reservation.o search_sort_utils.o crr_utils.o	
+
 clean:: 
 	${RM} ${APPS} *.o *~
 
