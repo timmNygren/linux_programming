@@ -1,4 +1,4 @@
-APPS=  crr
+APPS=  crr test_get_str
 APPS+= charcell-resize
 APPS+= charcell-signal-kip
 APPS+= charcell-atexit
@@ -18,6 +18,7 @@ charcell-resize: LIBS+=-lncurses
 charcell-signal-kip: LIBS+=-lncurses
 charcell-atexit: LIBS+=-lncurses
 charcell-signal-kip: charcell-utils.o
+test_get_str: LIBS+=-lncurses
 
 
 charcell-atexit: charcell-atexit.o charcell-atexit-keyhistory.o charcell-utils.o
