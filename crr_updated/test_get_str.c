@@ -35,7 +35,6 @@ void signal_catcher( int signum )
 	raise( SIGWINCH );
 }
 
-
 void install_handler( int signum )
 {
 	/***
@@ -65,8 +64,28 @@ void install_handler( int signum )
 	}
 }
 
-char *choices[] = { "Choice 1", "Choice 2", "Choice 3", "Exit" };
+void print_menu(WINDOW *menu_win, int highlight)
+{
+	int x, y, i;	
 
+	x = 2;
+	y = 2;
+	box(menu_win, 0, 0);
+	for(i = 0; i < n_choices; ++i)
+	{	if(highlight == i) /* High light the present choice */
+		{	wattron(menu_win, A_REVERSE); 
+			mvwprintw(menu_win, y, x, "%s", choices[i]);
+			wattroff(menu_win, A_REVERSE);
+		}
+		else
+			mvwprintw(menu_win, y, x, "%s", choices[i]);
+		++y;
+	}
+	wrefresh(menu_win);
+}
+
+char *choices[] = { "Choice 1", "Choice 2", "Choice 3", "Exit" };
+int n_choices = sizeof(choices) / sizeof(char *);
 #define BUFLEN 1024
 int main(int argc, char *argv[])
 {
@@ -87,8 +106,12 @@ int main(int argc, char *argv[])
 	int d = 0;
 	char buf[BUFLEN];
 	int ch;
+
+	int highlight = 0;
+	int choice = 0;
 	mvwprintw(display, 1, 2, "Use arrow keys to go up and down, Press enter to select a choice");
-	wrefresh(display);
+	print_menu( display, highlight );
+	// wrefresh(display);
 	while((ch = getch()) != KEY_F(10)) {
 		switch (ch) {
 			case KEY_RESIZE:
@@ -112,23 +135,35 @@ int main(int argc, char *argv[])
 				wrefresh(display);
 				break;
 			case KEY_UP:
-				strncpy( buf, "KEY_UP", BUFLEN );
-				mvwprintw( display, d++ + 2, 2, buf );
-				d = d % dispheight;
-				wrefresh(display);
+				if(highlight == 0)
+					highlight = n_choices;
+				else
+					--highlight;
 				break;
+				// strncpy( buf, "KEY_UP", BUFLEN );
+				// mvwprintw( display, d++ + 2, 2, buf );
+				// d = d % dispheight;
+				// wrefresh(display);
+				// break;
 			case KEY_DOWN:
-				strncpy( buf, "KEY_DOWN", BUFLEN );
-				mvwprintw( display, d++ + 2, 2, buf );
-				d = d % dispheight;
-				wrefresh(display);
+				if(highlight == n_choices)
+					highlight = 0;
+				else 
+					++highlight;
 				break;
+				// strncpy( buf, "KEY_DOWN", BUFLEN );
+				// mvwprintw( display, d++ + 2, 2, buf );
+				// d = d % dispheight;
+				// wrefresh(display);
+				// break;
 			case KEY_ENTER:
-				strncpy( buf, "KEY_ENTER", BUFLEN );
-				mvwprintw( display, d++ + 2, 2, buf );
-				d = d % dispheight;
-				wrefresh(display);
+				choice = highlight;
 				break;
+				// strncpy( buf, "KEY_ENTER", BUFLEN );
+				// mvwprintw( display, d++ + 2, 2, buf );
+				// d = d % dispheight;
+				// wrefresh(display);
+				// break;
 			default :
 				if ( isprint(ch) ) {
 					snprintf( buf, BUFLEN, "%c", ch );
@@ -141,6 +176,12 @@ int main(int argc, char *argv[])
 					wrefresh(display);
 				}
 				break;
+			if( choice != 0 )
+			{
+				snprintf( buf, BUFLEN, "You chose choice %d with choice string %s\n", choice, choices[choice] );
+				mvwprintw( display, 6, 0, buf );
+				choice = 0;
+			}
 		}
 	}
 
