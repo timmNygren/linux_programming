@@ -19,6 +19,7 @@ charcell-signal-kip: LIBS+=-lncurses
 charcell-atexit: LIBS+=-lncurses
 charcell-signal-kip: charcell-utils.o
 test_get_str: LIBS+=-lncurses
+test_get_str: charcell-utils.o
 
 
 charcell-atexit: charcell-atexit.o charcell-atexit-keyhistory.o charcell-utils.o

@@ -13,7 +13,7 @@
 
 #define DISPLAY_TITLE "| Display |"
 #define EDIT_TITLE "| Edit |"
-#define QUIT_TITLE "| F1->Quit |"
+#define QUIT_TITLE "| F10->Quit |"
 
 
 void draw_borders(WINDOW * screen, char horiz, char vert, char corner);

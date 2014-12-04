@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 	int d = 0;
 	char buf[BUFLEN];
 	int ch;
-	while((ch = getch()) != KEY_F(1)) {
+	while((ch = getch()) != KEY_F(10)) {
 		switch (ch) {
 			case KEY_RESIZE:
 				dispheight = size_display( display, edit );
