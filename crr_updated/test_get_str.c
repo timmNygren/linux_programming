@@ -64,6 +64,8 @@ void install_handler( int signum )
 	}
 }
 
+char *choices[] = { "Choice 1", "Choice 2", "Choice 3", "Exit" };
+int n_choices = sizeof(choices) / sizeof(char *);
 void print_menu(WINDOW *menu_win, int highlight)
 {
 	int x, y, i;	
@@ -84,8 +86,6 @@ void print_menu(WINDOW *menu_win, int highlight)
 	wrefresh(menu_win);
 }
 
-char *choices[] = { "Choice 1", "Choice 2", "Choice 3", "Exit" };
-int n_choices = sizeof(choices) / sizeof(char *);
 #define BUFLEN 1024
 int main(int argc, char *argv[])
 {
