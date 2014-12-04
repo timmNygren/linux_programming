@@ -84,15 +84,16 @@ int main(int argc, char *argv[])
 	WINDOW* edit = newwin(1,1, 0, 0 );
 	int dispheight = size_display( display, edit );
 
-	int d = 1;
+	int d = 0;
 	char buf[BUFLEN];
 	int ch;
-	mvwprintw(display, 2, 2, "Use arrow keys to go up and down, Press enter to select a choice");
+	mvwprintw(display, 1, 2, "Use arrow keys to go up and down, Press enter to select a choice");
+	wrefresh(display);
 	while((ch = getch()) != KEY_F(10)) {
 		switch (ch) {
 			case KEY_RESIZE:
 				dispheight = size_display( display, edit );
-				d = 1;
+				d = 0;
 				strncpy( buf, "KEY_RESIZE", BUFLEN );
 				mvwprintw( display, d++ + 2, 2, buf );
 				d = d % dispheight;
@@ -140,8 +141,6 @@ int main(int argc, char *argv[])
 					wrefresh(display);
 				}
 				break;
-			if( d == 0 )
-				d = 1;
 		}
 	}
 
