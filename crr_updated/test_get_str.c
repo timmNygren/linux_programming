@@ -32,7 +32,7 @@ void signal_catcher( int signum )
 	 *
 	 * Note that raise(2) IS async signal safe (see signal(7)).
 	 */
-	//raise( SIGWINCH );
+	raise( SIGWINCH );
 }
 
 
@@ -65,7 +65,7 @@ void install_handler( int signum )
 	}
 }
 
-
+char *choices[] = { "Choice 1", "Choice 2", "Choice 3", "Exit" };
 
 #define BUFLEN 1024
 int main(int argc, char *argv[])
@@ -84,14 +84,15 @@ int main(int argc, char *argv[])
 	WINDOW* edit = newwin(1,1, 0, 0 );
 	int dispheight = size_display( display, edit );
 
-	int d = 0;
+	int d = 1;
 	char buf[BUFLEN];
 	int ch;
+	mvwprintw(display, 2, 2, "Use arrow keys to go up and down, Press enter to select a choice");
 	while((ch = getch()) != KEY_F(10)) {
 		switch (ch) {
 			case KEY_RESIZE:
 				dispheight = size_display( display, edit );
-				d = 0;
+				d = 1;
 				strncpy( buf, "KEY_RESIZE", BUFLEN );
 				mvwprintw( display, d++ + 2, 2, buf );
 				d = d % dispheight;
@@ -109,14 +110,20 @@ int main(int argc, char *argv[])
 				}
 				wrefresh(display);
 				break;
-			case KEY_LEFT:
-				strncpy( buf, "KEY_LEFT", BUFLEN );
+			case KEY_UP:
+				strncpy( buf, "KEY_UP", BUFLEN );
 				mvwprintw( display, d++ + 2, 2, buf );
 				d = d % dispheight;
 				wrefresh(display);
 				break;
-			case KEY_F(2):
-				strncpy( buf, "KEY_F(2)", BUFLEN );
+			case KEY_DOWN:
+				strncpy( buf, "KEY_DOWN", BUFLEN );
+				mvwprintw( display, d++ + 2, 2, buf );
+				d = d % dispheight;
+				wrefresh(display);
+				break;
+			case KEY_ENTER:
+				strncpy( buf, "KEY_ENTER", BUFLEN );
 				mvwprintw( display, d++ + 2, 2, buf );
 				d = d % dispheight;
 				wrefresh(display);
@@ -133,6 +140,8 @@ int main(int argc, char *argv[])
 					wrefresh(display);
 				}
 				break;
+			if( d == 0 )
+				d = 1;
 		}
 	}
 
