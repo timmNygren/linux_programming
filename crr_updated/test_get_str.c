@@ -141,6 +141,7 @@ int main(int argc, char *argv[])
 					--highlight;
 				strncpy( buf, "KEY_UP", BUFLEN );
 				mvwprintw( edit, 1, 2, buf );
+				mvwaddch( edit, 1, strlen(buf), ' ' );
 				wrefresh(edit);
 				break;
 				// mvwprintw( display, d++ + 2, 2, buf );
@@ -153,6 +154,7 @@ int main(int argc, char *argv[])
 					++highlight;
 				strncpy( buf, "KEY_DOWN", BUFLEN );
 				mvwprintw( edit, 1, 2, buf );
+				mvwaddch( edit, 1, strlen(buf), ' ' );
 				wrefresh(edit);
 				break;
 				// mvwprintw( display, d++ + 2, 2, buf );
@@ -163,6 +165,7 @@ int main(int argc, char *argv[])
 				choice = highlight;
 				strncpy( buf, "KEY_ENTER", BUFLEN );
 				mvwprintw( edit, 1, 2, buf );
+				mvwaddch( edit, 1, strlen(buf), ' ' );
 				wrefresh(edit);
 				break;
 				// mvwprintw( display, d++ + 2, 2, buf );
@@ -185,7 +188,7 @@ int main(int argc, char *argv[])
 		print_menu( display, highlight );
 		if( choice != 0 )
 		{
-			snprintf( buf, BUFLEN, "You chose choice %d with choice string %s\n", choice, choices[choice-1] );
+			snprintf( buf, BUFLEN, "You chose choice %d with choice string %s", choice, choices[choice-1] );
 			mvwprintw( display, 8, 2, buf );
 			wrefresh( display );
 			choice = 0;
