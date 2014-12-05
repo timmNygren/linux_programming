@@ -64,4 +64,15 @@ int size_display( WINDOW* display, WINDOW* edit )
 	return parent_y - 4 - edit_size;
 }
 
+void clear_line( WINDOW* screen, int row, char vert )
+{
+	int x, y, i;
+	getmaxyx( screen, y, x );
+
+	mvwaddch(screen, row, 0, vert );
+	for(i = 1; i < (x - 2); i++) {
+		mvwaddch( screen, row, i, ' ' );
+	}
+	mvwaddch( scree, row, x - 1, vert );
+}
 

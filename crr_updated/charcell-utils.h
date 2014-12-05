@@ -20,4 +20,6 @@ void draw_borders(WINDOW * screen, char horiz, char vert, char corner);
 
 int size_display( WINDOW* display, WINDOW* edit );
 
+void clear_line( WINDOW* screen, int row, char vert );
+
 #endif /* CHARCELL_UTILS_H */
