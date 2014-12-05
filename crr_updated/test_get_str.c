@@ -136,30 +136,35 @@ int main(int argc, char *argv[])
 				break;
 			case KEY_UP:
 				if(highlight == 0)
-					highlight = n_choices;
+					highlight = n_choices - 1;
 				else
 					--highlight;
+				strncpy( buf, "KEY_UP", BUFLEN );
+				mvwprintw( edit, 1, 2, buf );
+				wrefresh(edit);
 				break;
-				// strncpy( buf, "KEY_UP", BUFLEN );
 				// mvwprintw( display, d++ + 2, 2, buf );
 				// d = d % dispheight;
-				// wrefresh(display);
-				// break;
+				break;
 			case KEY_DOWN:
-				if(highlight == n_choices)
+				if(highlight == n_choices - 1)
 					highlight = 0;
 				else 
 					++highlight;
+				strncpy( buf, "KEY_DOWN", BUFLEN );
+				mvwprintw( edit, 1, 2, buf );
+				wrefresh(edit);
 				break;
-				// strncpy( buf, "KEY_DOWN", BUFLEN );
 				// mvwprintw( display, d++ + 2, 2, buf );
 				// d = d % dispheight;
 				// wrefresh(display);
 				// break;
 			case KEY_ENTER:
 				choice = highlight;
+				strncpy( buf, "KEY_ENTER", BUFLEN );
+				mvwprintw( edit, 1, 2, buf );
+				wrefresh(edit);
 				break;
-				// strncpy( buf, "KEY_ENTER", BUFLEN );
 				// mvwprintw( display, d++ + 2, 2, buf );
 				// d = d % dispheight;
 				// wrefresh(display);
