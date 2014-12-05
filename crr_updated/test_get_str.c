@@ -176,6 +176,7 @@ int main(int argc, char *argv[])
 					wrefresh(display);
 				}
 				break;
+			print_menu( display, highlight );
 			if( choice != 0 )
 			{
 				snprintf( buf, BUFLEN, "You chose choice %d with choice string %s\n", choice, choices[choice] );
