@@ -186,7 +186,8 @@ int main(int argc, char *argv[])
 		if( choice != 0 )
 		{
 			snprintf( buf, BUFLEN, "You chose choice %d with choice string %s\n", choice, choices[choice] );
-			mvwprintw( display, 6, 0, buf );
+			mvwprintw( display, 6, 2, buf );
+			wrefresh( display );
 			choice = 0;
 		}
 	}
