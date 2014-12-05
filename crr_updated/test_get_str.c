@@ -74,7 +74,7 @@ void print_menu(WINDOW *menu_win, int highlight)
 	y = 2;
 	box(menu_win, 0, 0);
 	for(i = 0; i < n_choices; ++i)
-	{	if(highlight == i) /* High light the present choice */
+	{	if(highlight == i + 1) /* High light the present choice */
 		{	wattron(menu_win, A_REVERSE); 
 			mvwprintw(menu_win, y, x, "%s", choices[i]);
 			wattroff(menu_win, A_REVERSE);
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 	char buf[BUFLEN];
 	int ch;
 
-	int highlight = 0;
+	int highlight = 1;
 	int choice = 0;
 	mvwprintw(display, 1, 2, "Use arrow keys to go up and down, Press enter to select a choice");
 	print_menu( display, highlight );
@@ -135,8 +135,8 @@ int main(int argc, char *argv[])
 				wrefresh(display);
 				break;
 			case KEY_UP:
-				if(highlight == 0)
-					highlight = n_choices - 1;
+				if(highlight == 1)
+					highlight = n_choices;
 				else
 					--highlight;
 				strncpy( buf, "KEY_UP", BUFLEN );
@@ -147,8 +147,8 @@ int main(int argc, char *argv[])
 				// d = d % dispheight;
 				break;
 			case KEY_DOWN:
-				if(highlight == n_choices - 1)
-					highlight = 0;
+				if(highlight == n_choices)
+					highlight = 1;
 				else 
 					++highlight;
 				strncpy( buf, "KEY_DOWN", BUFLEN );
@@ -185,8 +185,8 @@ int main(int argc, char *argv[])
 		print_menu( display, highlight );
 		if( choice != 0 )
 		{
-			snprintf( buf, BUFLEN, "You chose choice %d with choice string %s\n", choice, choices[choice] );
-			mvwprintw( display, 6, 2, buf );
+			snprintf( buf, BUFLEN, "You chose choice %d with choice string %s\n", choice, choices[choice-1] );
+			mvwprintw( display, 8, 2, buf );
 			wrefresh( display );
 			choice = 0;
 		}
