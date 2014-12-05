@@ -193,8 +193,6 @@ int main(int argc, char *argv[])
 			mvwprintw( display, 8, 2, buf );
 			wrefresh( display );
 			choice = 0;
-		} else {
-
 		}
 	}
 

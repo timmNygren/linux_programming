@@ -73,6 +73,6 @@ void clear_line( WINDOW* screen, int row, char vert )
 	for(i = 1; i < (x - 2); i++) {
 		mvwaddch( screen, row, i, ' ' );
 	}
-	mvwaddch( scree, row, x - 1, vert );
+	mvwaddch( screen, row, x - 1, vert );
 }
 
