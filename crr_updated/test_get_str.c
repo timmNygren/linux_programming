@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 				// d = d % dispheight;
 				// wrefresh(display);
 				// break;
-			case KEY_ENTER:
+			case 10:
 				choice = highlight;
 				strncpy( buf, "KEY_ENTER", BUFLEN );
 				mvwprintw( edit, 1, 2, buf );
