@@ -69,7 +69,16 @@ void get_string_input( WINDOW *edit_win, char* dest )
 	curseString input;
 	cursestring_init( &input );
 
-	
+	int ch;
+	while( ch = getch() != 10 )
+	{
+		switch(ch) {
+			case KEY_RESIZE:
+				break;
+			case 127:
+				break;
+		}
+	}
 }
 
 char *choices[] = { "Choice 1", "Choice 2", "Choice 3", "Exit" };
@@ -184,6 +193,13 @@ int main(int argc, char *argv[])
 				// d = d % dispheight;
 				// wrefresh(display);
 				// break;
+			case 127:
+				// choice = highlight;
+				strncpy( buf, "KEY_BACKSPACE", BUFLEN );
+				mvwprintw( edit, 1, 2, buf );
+
+				wrefresh(edit);
+				break;
 			default :
 				if ( isprint(ch) ) {
 					snprintf( buf, BUFLEN, "%c", ch );
