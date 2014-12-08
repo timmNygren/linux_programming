@@ -15,11 +15,24 @@
 #define EDIT_TITLE "| Edit |"
 #define QUIT_TITLE "| F10->Quit |"
 
+//#define STRLEN 129
+#define STRLEN 11
+
+typedef struct CurseString {
+	int index;
+	char cstring[STRLEN];
+} curseString;
+
+void cursestring_init( curseString* string );
+void cursestring_add_char( curseString* string, char c );
+void cursestring_delete_char( curseString* string );
+void cursestring_get_string( curseString* string, char* dest );
+
 
 void draw_borders(WINDOW * screen, char horiz, char vert, char corner);
 
 int size_display( WINDOW* display, WINDOW* edit );
 
-void clear_line( WINDOW* screen, int row, char vert );
+void clear_line( WINDOW* screen, int row );
 
 #endif /* CHARCELL_UTILS_H */

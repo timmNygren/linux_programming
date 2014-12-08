@@ -7,6 +7,35 @@
 
 #include "charcell-utils.h"
 
+void cursestring_init( curseString* string )
+{
+	string->index = 0;
+	string->cstring[string->index] = '\0';
+}
+
+void cursestring_add_char( curseString* string, char c )
+{
+	if( string->index == STRLEN - 1 )
+	{
+		string->index--;
+	}
+	string->cstring[string->index++] = c;
+	string->cstring[string->index] = '\0';
+}
+
+void cursestring_delete_char( curseString* string )
+{
+	if( string->index == 0 )
+		return;
+	string->index--;
+	string->cstring[string->index] = '\0';
+}
+
+void cursestring_get_string( curseString* string, char* dest )
+{
+	strncpy( dest, string->cstring, STRLEN );
+}
+
 void draw_borders(WINDOW * screen, char horiz, char vert, char corner)
 {
 	int x, y, i;
@@ -64,15 +93,13 @@ int size_display( WINDOW* display, WINDOW* edit )
 	return parent_y - 4 - edit_size;
 }
 
-void clear_line( WINDOW* screen, int row, char vert )
+void clear_line( WINDOW* screen, int row )
 {
 	int x, y, i;
 	getmaxyx( screen, y, x );
 
-	mvwaddch(screen, row, 0, vert );
 	for(i = 1; i < (x - 2); i++) {
 		mvwaddch( screen, row, i, ' ' );
 	}
-	mvwaddch( scree, row, x - 1, vert );
 }
 

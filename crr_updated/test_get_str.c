@@ -64,6 +64,14 @@ void install_handler( int signum )
 	}
 }
 
+void get_string_input( WINDOW *edit_win, char* dest )
+{
+	curseString input;
+	cursestring_init( &input );
+
+	
+}
+
 char *choices[] = { "Choice 1", "Choice 2", "Choice 3", "Exit" };
 int n_choices = sizeof(choices) / sizeof(char *);
 void print_menu(WINDOW *menu_win, int highlight)
@@ -72,10 +80,14 @@ void print_menu(WINDOW *menu_win, int highlight)
 
 	x = 2;
 	y = 2;
-	box(menu_win, 0, 0);
+	//box(menu_win, 0, 0);
+	mvwprintw(menu_win, 1, 2, "Use arrow keys to go up and down, Press enter to select a choice");
 	for(i = 0; i < n_choices; ++i)
-	{	if(highlight == i + 1) /* High light the present choice */
-		{	wattron(menu_win, A_REVERSE); 
+	{
+		clear_line(menu_win, y);	
+		if(highlight == i + 1) /* High light the present choice */
+		{	
+			wattron(menu_win, A_REVERSE); 
 			mvwprintw(menu_win, y, x, "%s", choices[i]);
 			wattroff(menu_win, A_REVERSE);
 		}
@@ -109,7 +121,7 @@ int main(int argc, char *argv[])
 
 	int highlight = 1;
 	int choice = 0;
-	mvwprintw(display, 1, 2, "Use arrow keys to go up and down, Press enter to select a choice");
+	//mvwprintw(display, 1, 2, "Use arrow keys to go up and down, Press enter to select a choice");
 	print_menu( display, highlight );
 	// wrefresh(display);
 	while((ch = getch()) != KEY_F(10)) {
@@ -175,6 +187,7 @@ int main(int argc, char *argv[])
 			default :
 				if ( isprint(ch) ) {
 					snprintf( buf, BUFLEN, "%c", ch );
+					clear_line( edit, 1 );
 					mvwprintw( edit, 1, 2, buf );
 					wrefresh(edit);
 				} else {
@@ -185,17 +198,21 @@ int main(int argc, char *argv[])
 				}
 				break;
 		}
-		print_menu( display, highlight );
-		if( choice != 0 )
+		//print_menu( display, highlight );
+		if( choice != 0 && choice != n_choices )
 		{
-			clear_line( display, 8, VERT1 );
-			snprintf( buf, BUFLEN, "You chose choice %d with choice string %s", choice, choices[choice-1] );
-			mvwprintw( display, 8, 2, buf );
+			dispheight = size_display( display, edit );
+			//clear_line( display, 8 );
+			//snprintf( buf, BUFLEN, "You chose choice %d with choice string %s", choice, choices[choice-1] );
+			strncpy( buf, "Enter a string", BUFLEN );
+			mvwprintw( display, 2, 2, buf );
 			wrefresh( display );
+			
+			
+			getch();
 			choice = 0;
-		} else {
-
-		}
+		} 
+		print_menu( display, highlight );
 	}
 
 	// close curses lib, reset terminal
