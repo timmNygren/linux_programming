@@ -70,14 +70,27 @@ void get_string_input( WINDOW *edit_win, char* dest )
 	cursestring_init( &input );
 
 	int ch;
+	char c;
 	while( ch = getch() != 10 )
 	{
 		switch(ch) {
 			case KEY_RESIZE:
 				break;
-			case 127:
+			case KEY_BACKSPACE:
+				curse_delete_char( &input );
+				break;
+			default:
+				if ( isprint(ch) ) {
+					// snprintf( dest, BUFLEN, "%c", ch );
+					c = (char)ch;
+					cursestring_add_char( &input, c );
+				}
 				break;
 		}
+		cursestring_get_string( &input, dest );
+		clear_line( edit_win, 1 );
+		mvwprintw( edit_win, 1, 2, dest );
+		wrefresh(edit_win);
 	}
 }
 
@@ -193,7 +206,7 @@ int main(int argc, char *argv[])
 				// d = d % dispheight;
 				// wrefresh(display);
 				// break;
-			case 127:
+			case KEY_BACKSPACE:
 				// choice = highlight;
 				strncpy( buf, "KEY_BACKSPACE", BUFLEN );
 				mvwprintw( edit, 1, 2, buf );
@@ -223,7 +236,18 @@ int main(int argc, char *argv[])
 			strncpy( buf, "Enter a string", BUFLEN );
 			mvwprintw( display, 2, 2, buf );
 			wrefresh( display );
+
+			get_string_input( edit, buf );
+
+			if( strlen( buf ) == 0 )
+				strncpy( buf, "You didn't type anything", BUFLEN );
+			else
+				snprintf( buf, BUFLEN, "You typed string: %s", buf );
 			
+			mvwprintw( display, 3, 2, buf );
+			clear_line( edit, 1 );
+			wrefresh( display );
+
 			
 			getch();
 			choice = 0;
