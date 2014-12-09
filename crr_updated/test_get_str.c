@@ -68,16 +68,16 @@ void get_string_input( WINDOW *edit_win, char* dest )
 {
 	curseString input;
 	cursestring_init( &input );
-
+	cursestring_get_string( &input, dest );
 	int ch;
 	char c;
-	while( ch = getch() != 10 )
+	while( (ch = getch()) != 10 )
 	{
 		switch(ch) {
 			case KEY_RESIZE:
 				break;
 			case KEY_BACKSPACE:
-				curse_delete_char( &input );
+				cursestring_delete_char( &input );
 				break;
 			default:
 				if ( isprint(ch) ) {
@@ -92,6 +92,7 @@ void get_string_input( WINDOW *edit_win, char* dest )
 		mvwprintw( edit_win, 1, 2, dest );
 		wrefresh(edit_win);
 	}
+	clear_line( edit_win, 1 );
 }
 
 char *choices[] = { "Choice 1", "Choice 2", "Choice 3", "Exit" };
@@ -139,6 +140,7 @@ int main(int argc, char *argv[])
 
 	int d = 0;
 	char buf[BUFLEN];
+	char inputstring[BUFLEN];
 	int ch;
 
 	int highlight = 1;
@@ -237,15 +239,14 @@ int main(int argc, char *argv[])
 			mvwprintw( display, 2, 2, buf );
 			wrefresh( display );
 
-			get_string_input( edit, buf );
+			get_string_input( edit, inputstring );
 
-			if( strlen( buf ) == 0 )
+			if( strlen( inputstring ) == 0 )
 				strncpy( buf, "You didn't type anything", BUFLEN );
 			else
-				snprintf( buf, BUFLEN, "You typed string: %s", buf );
-			
+				snprintf( buf, BUFLEN, "You typed string: %s", inputstring );
+
 			mvwprintw( display, 3, 2, buf );
-			clear_line( edit, 1 );
 			wrefresh( display );
 
 			
