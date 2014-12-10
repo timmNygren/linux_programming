@@ -238,6 +238,7 @@ void setup_reservation( void )
 	struct tm brokendate;
 	int result;
 	time_t timekey;
+	
 	puts( "\nInput a date and time to check. Press enter to go back." );
 	while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
 	{
@@ -259,10 +260,9 @@ void setup_reservation( void )
 		timekey = mktime( &brokendate );
 
 		size_t* roomlookups = resVect_select_room_at_time( &resList, timekey, rooms, numRooms );
-		if( roomlookups )
-			puts( "There are some rooms reserved" );
-		printf( "\nThe following rooms are available on %s.\n", buff );
+
 		strncpy( searchbuff, buff, 64 );
+		printf( "\nThe following rooms are available on %s.\n", buff );
 		if( roomlookups )
 		{
 			crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
@@ -274,22 +274,6 @@ void setup_reservation( void )
 		int room;
 		while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
 		{
-			// if( strlen(buff) > 2 )
-			// {
-			// 	puts( "\nNot a valid input\n" );
-			// 	printf( "The following rooms are available on %s.\n", buff );
-			// 	// strncpy( searchbuff, buff, 64 );
-			// 	if( roomlookups )
-			// 	{
-			// 		crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
-			// 	} else {
-			// 		print_rooms( rooms, numRooms, 1 );
-			// 		// res_lookup_size = numRooms;
-			// 	}
-			// 	puts( "Press enter to go back." );
-			// 	continue;
-			// }
-
 			int err = sscanf(buff, "%d", &room);
 			if( err != 1 || room < 1 || room > res_lookup_size )
 			{
