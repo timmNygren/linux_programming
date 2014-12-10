@@ -601,16 +601,20 @@ int main( int argc, char* argv[] )
 		// break;
 		switch( choice ) {
 			case 1:
-				puts( "You chose setup_reservation" );
+				// puts( "You chose setup_reservation" );
+				setup_reservation();
 				break;
 			case 2:
-				puts( "You chose day_search" );
+				// puts( "You chose day_search" );
+				day_search();
 				break;
 			case 3:
-				puts( "You chose room_search" );
+				// puts( "You chose room_search" );
+				room_search();
 				break;
 			case 4:
-				puts( "You chose desc_search" );
+				// puts( "You chose desc_search" );
+				desc_search();
 				break;
 		}
 		main_menu();
