@@ -15,8 +15,8 @@
 #define EDIT_TITLE "| Edit |"
 #define QUIT_TITLE "| F10->Quit |"
 
-//#define STRLEN 129
-#define STRLEN 11
+#define STRLEN 129
+
 
 typedef struct CurseString {
 	int index;
@@ -28,8 +28,9 @@ void cursestring_add_char( curseString* string, char c );
 void cursestring_delete_char( curseString* string );
 void cursestring_get_string( curseString* string, char* dest );
 
+void get_string_input( WINDOW* edit_win, char* dest );
 
-void draw_borders(WINDOW * screen, char horiz, char vert, char corner);
+void draw_borders(WINDOW* screen, char horiz, char vert, char corner);
 
 int size_display( WINDOW* display, WINDOW* edit );
 

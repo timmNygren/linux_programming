@@ -36,7 +36,38 @@ void cursestring_get_string( curseString* string, char* dest )
 	strncpy( dest, string->cstring, STRLEN );
 }
 
-void draw_borders(WINDOW * screen, char horiz, char vert, char corner)
+void get_string_input( WINDOW* edit_win, char* dest )
+{
+	curseString input;
+	cursestring_init( &input );
+	cursestring_get_string( &input, dest );
+	int ch;
+	char c;
+	while( (ch = getch()) != 10 )
+	{
+		switch(ch) {
+			case KEY_RESIZE:
+				break;
+			case KEY_BACKSPACE:
+				cursestring_delete_char( &input );
+				break;
+			default:
+				if ( isprint(ch) ) {
+					// snprintf( dest, BUFLEN, "%c", ch );
+					c = (char)ch;
+					cursestring_add_char( &input, c );
+				}
+				break;
+		}
+		cursestring_get_string( &input, dest );
+		clear_line( edit_win, 1 );
+		mvwprintw( edit_win, 1, 2, dest );
+		wrefresh(edit_win);
+	}
+	clear_line( edit_win, 1 );
+}
+
+void draw_borders(WINDOW* screen, char horiz, char vert, char corner)
 {
 	int x, y, i;
 
