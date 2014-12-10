@@ -264,6 +264,7 @@ size_t* resVect_select_room_at_time( resVect* v, time_t key, char** rooms, int n
 	size_t res_address;
 	size_t* available = NULL;
 	if( reserved != NULL ) {
+		puts( "Found a room!" );
 		char** foundroom = bsearch( reserved->roomname, rooms, numrooms, sizeof(char*), bsearch_room_cmp );
 		room_address = foundroom - rooms;
 		res_address = reserved - v->data;

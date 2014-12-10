@@ -238,7 +238,7 @@ void setup_reservation( void )
 	struct tm brokendate;
 	int result;
 	time_t timekey;
-	puts( "Input a date and time to check. Press enter to go back." );
+	puts( "\nInput a date and time to check. Press enter to go back." );
 	while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
 	{
 		buff[strlen(buff)-1] = '\0';
@@ -259,7 +259,8 @@ void setup_reservation( void )
 		timekey = mktime( &brokendate );
 
 		size_t* roomlookups = resVect_select_room_at_time( &resList, timekey, rooms, numRooms );
-
+		if( roomlookups )
+			puts( "There are some rooms reserved" );
 		printf( "\nThe following rooms are available on %s.\n", buff );
 		strncpy( searchbuff, buff, 64 );
 		if( roomlookups )
