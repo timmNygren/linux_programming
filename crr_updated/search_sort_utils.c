@@ -29,10 +29,10 @@ int sort_time_name( const void* left, const void* right )
 {
 	const reservation *mleft = (const reservation*)left;
 	const reservation *mright = (const reservation*)right;
-	if( mleft->starttime < mright->starttime ) //&& mleft->endtime < mright->endtime && mleft->endtime <= mright->starttime )
+	if( mleft->starttime < mright->starttime ) 
 	{
 		return -1;
-	} else if( mleft->starttime > mright->starttime ) { // && mleft->endtime > mright->endtime && mleft->endtime > mright->starttime ) {
+	} else if( mleft->starttime > mright->starttime ) {
 		return 1;
 	} else {
 		return ( strcasecmp( mleft->roomname, mright->roomname) );

@@ -9,12 +9,6 @@
 #include "crr_utils.h"
 #include "search_sort_utils.h"
 
-// #define BUFFLEN 1024
-// #define ROOM_NAME_LEN 49
-// #define DAY_SEARCH 0
-// #define ROOM_SEARCH 1
-// #define DESC_SEARCH 2
-
 int fileChanges = 0;
 char* reservationfilename;
 char** rooms;
@@ -57,7 +51,6 @@ void cleanup( void )
 
 	if( strcmp( RES_ERROR_STR, "" ) != 0 )
 	{
-		// clean up from ncurses
 		puts( RES_ERROR_STR );
 		puts( "Press enter to continue. . ." );
 		getchar();
@@ -123,114 +116,7 @@ void setup_rooms( char* roomfilename )
 	qsort( rooms, numRooms, sizeof(char*), compare_string );
 }
 
-void add_reservations( void )
-{
-
-	struct tm test;
-	int result;
-	time_t tstart, tend;
-	char* desc1 = "A birthday party with pool.";
-	char* desc2 = "Chillin' in the lounge.";
-/////
-	result = getdate_r("2014/12/02 06PM", &test);
-	if( result != 0 )
-	{
-		printf( "%d: Error processing %s, with error code /%d/\n", __LINE__, "Tuesday", result ); 
-		exit(1);
-	}
-	tstart = mktime( &test );
-	result = getdate_r("2014/12/03 06PM", &test);
-	if( result != 0 )
-	{
-		printf( "%d: Error processing %s, with error code /%d/\n", __LINE__, "Wednesday", result ); 
-		exit(1);
-	}
-	tend = mktime( &test );
-
-	for( int i = 0; i < numRooms - 4; i+= 2 )
-	{
-		resVect_add( &resList, create_reservation( rooms[i], tstart, tend, "Birthday partay" ) );
-	}
-// End first
-
-/////
-	result = getdate_r("2014/12/01 at 06PM", &test);
-	if( result != 0 )
-	{
-		printf( "%d: Error processing %s, with error code /%d/\n", __LINE__, "Wednesday", result ); 
-		exit(1);
-	}
-	tstart = mktime( &test );
-	result = getdate_r("2014/12/02 at 06PM", &test);
-	if( result != 0 )
-	{
-		printf( "%d: Error processing %s, with error code /%d/\n", __LINE__, "Thursday", result ); 
-		exit(1);
-	}
-	tend = mktime( &test );
-	if( resVect_add( &resList, create_reservation( rooms[1], tstart, tend, desc1 ) ))
-	{
-		puts( "Conflicting reservations" );
-	}
-// End second
-
-/////
-	result = getdate_r("2014/12/28 at 06PM", &test);
-	if( result != 0 )
-	{
-		printf( "%d: Error processing %s, with error code /%d/\n", __LINE__, "Friday", result );
-		exit(1);
-	}
-	tstart = mktime( &test );
-	result = getdate_r("2014/12/29 at 06PM", &test);
-	if( result != 0 )
-	{
-		printf( "%d: Error processing %s, with error code /%d/\n", __LINE__, "Saturday", result ); 
-		exit(1);
-	}
-	tend = mktime( &test );
-	resVect_add( &resList, create_reservation( rooms[1], tstart, tend, desc1 ) );
-// end
-
-/////
-	result = getdate_r("2014/12/27 at 04PM", &test);
-	if( result != 0 )
-	{
-		printf( "%d: Error processing %s, with error code /%d/\n", __LINE__, "Thursday", result );
-		exit(1);
-	}
-	tstart = mktime( &test );
-	result = getdate_r("2014/12/28 at 04PM", &test);
-	if( result != 0 )
-	{
-		printf( "%d: Error processing %s, with error code /%d/\n", __LINE__, "Friday", result ); 
-		exit(1);
-	}
-	tend = mktime( &test );
-	resVect_add( &resList, create_reservation( rooms[8], tstart, tend, desc2 ) );
-// End Third
-
-/////
-	char* desc3 = "Doing massive studing for finals";
-	result = getdate_r("2014/12/02 at 04PM", &test);
-	if( result != 0 )
-	{
-		printf( "Error processing %s, with error code /%d/\n", "Tuesday", result );
-		exit(1);
-	}
-	tstart = mktime( &test );
-	result = getdate_r("2014/12/03 at 04PM", &test);
-	if( result != 0 )
-	{
-		printf( "Error processing %s, with error code /%d/\n", "Wednesday", result ); 
-		exit(1);
-	}
-	tend = mktime( &test );
-	resVect_add( &resList, create_reservation( rooms[numRooms - 1], tstart, tend, desc3 ) );
-// End fourth
-}
-
-// main function
+// Option 1
 void setup_reservation( void )
 {
 	char buff[BUFFLEN];
@@ -251,7 +137,7 @@ void setup_reservation( void )
 			puts( "Enter a date and time to check or press enter to go back." );
 			continue;
 		} else if( result != 0 ) {
-			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/\n", __FUNCTION__, __LINE__, buff, result ); 
+			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/. Please source datemsk.sh\n", __FUNCTION__, __LINE__, buff, result ); 
 			puts( "Error converting date. Exiting program." );
 			puts( "Press enter to quit. . ." );
 			getchar();
@@ -325,8 +211,8 @@ void setup_reservation( void )
 }
 
 #define SELECT( function ) function( &resList, key )
-// main function
-void review_update_or_delete( size_t* roomlookups ) //int search_type, char** rooms, int numrooms )
+// Used in options 2, 3, and 4
+void review_update_or_delete( size_t* roomlookups )
 {
 	char buff[BUFFLEN];
 	if( roomlookups ) 
@@ -350,8 +236,8 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 			}
 			break;
 		}
-		choice--;
-		// printf( "Your choice was %d\n", choice );
+		choice--;	// Make choice base 0
+
 		int update;
 		puts( "\nWould you like to update or delete? Press enter to go back." );
 		puts( "1. Update\n2. Delete" );
@@ -410,6 +296,7 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 		puts( "\nThere were no reservations found\n" );
 }
 
+// Option 2
 void day_search( void )
 {
 	char buff[BUFFLEN];
@@ -426,12 +313,10 @@ void day_search( void )
 		result = getdate_r( buff, &brokendate );
 		if( result == 7 || result == 8 )
 		{
-			// puts( "\nInvalid input.\n" );
-			// puts( "Enter a day of the week to check reservations. Press enter to go back." );
 			puts( "\nPlease enter a day of the week (Monday, Tuesday...) to check reservation. Press enter to go back." );
 			continue;
 		} else if( result != 0 ) {
-			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/\n", __FUNCTION__, __LINE__, buff, result ); 
+			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/. Please source datemsk.sh\n", __FUNCTION__, __LINE__, buff, result ); 
 			puts( "\nError converting date. Exiting program." );
 			puts( "Press enter to quit. . ." );
 			getchar();
@@ -446,9 +331,9 @@ void day_search( void )
 	review_update_or_delete( roomlookups );
 	if( roomlookups )
 		free( roomlookups );
-	// qsort( resList.data, resList.count, sizeof(reservation), sort_name_time );
 }
 
+// Option 3
 void room_search( void )
 {
 	char buff[ROOM_NAME_LEN];
@@ -473,7 +358,7 @@ void room_search( void )
 		print_rooms( rooms, numRooms, 0 );
 		puts( "\nEnter a room to check reservations over all days. Press enter to go back." );
 	}
-	// printf( "Room chosen was %s\n", rooms[roomCheck - rooms] );
+
 	key = calloc( ROOM_NAME_LEN, sizeof(char) );
 	if( !key )
 	{
@@ -485,12 +370,6 @@ void room_search( void )
 
 	roomlookups = SELECT( resVect_select_res_room );
 
-
-	// for( int i = 0; i < res_lookup_size; i++ )
-	// {
-	// 	printf( "Reservation indicies are %li\n", roomlookups[i] );
-	// 	// crr_print_reservations( &resList, roomlookups, res_lookup_size );
-	// }
 	review_update_or_delete( roomlookups );
 
 	if( key )
@@ -499,6 +378,7 @@ void room_search( void )
 		free( roomlookups );
 }
 
+// Option 4
 void desc_search( void )
 {
 	char buff[DESC_SIZE];
@@ -506,7 +386,6 @@ void desc_search( void )
 	size_t* roomlookups = NULL;
 
 	puts( "\nEnter a word to search reservation descriptions. Press enter to go back." );
-	// print_rooms( rooms, numRooms, 0 );
 
 	fgets( buff, DESC_SIZE, stdin );
 
@@ -525,13 +404,6 @@ void desc_search( void )
 	strncpy( key, buff, DESC_SIZE );
 
 	roomlookups = SELECT( resVect_select_res_desc );
-
-
-	// for( int i = 0; i < res_lookup_size; i++ )
-	// {
-	// 	printf( "Reservation indicies are %li\n", roomlookups[i] );
-	// 	// crr_print_reservations( &resList, roomlookups, res_lookup_size );
-	// }
 
 	review_update_or_delete( roomlookups );
 
@@ -557,14 +429,13 @@ void init( int argc, char* argv[] )
 	atexit( cleanup );
 	setup_rooms( argv[1] );
 	resVect_init( &resList );
-	// add_reservations();
 
 	resVect_read_file( &resList, reservationfilename );
 	resVect_check_consistency( &resList, rooms, numRooms );
 
-	// init ncurses interface
 }
 
+// Clears the input buffer when saving
 void clear_input_buffer( void )
 {
 	int c;
@@ -576,21 +447,10 @@ void clear_input_buffer( void )
 int main( int argc, char* argv[] )
 {
 	init( argc, argv );
-	
-
-	puts("\n\n");
-	puts( "Printing all reservations" );
-	for( int i = 0; i < resVect_count( &resList ); i++ )
-	{
-		res_print_reservation( resVect_get( &resList, i ) );
-	}
-	puts( "Done printing reservations" );
-	puts("\n\n");
 
 	puts( "Welcome to Console Room Reservation!\n" );
-	// print_rooms( rooms, numRooms, 1 );
-	// puts( "What would you like to do today?" );
 	main_menu();
+
 	char buff[BUFFLEN];
 	int choice;
 	while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
@@ -600,47 +460,24 @@ int main( int argc, char* argv[] )
 		{
 			puts( "\nInvalid choice.\n" );
 			main_menu();
-			// puts( "The following rooms are:" );
-			// print_rooms( rooms, numRooms, 1 );
 			continue;
 		}
-		// room--;	// Make 0 offset
-		// break;
 		switch( choice ) {
 			case 1:
-				// puts( "You chose setup_reservation" );
 				setup_reservation();
 				break;
 			case 2:
-				// puts( "You chose day_search" );
 				day_search();
 				break;
 			case 3:
-				// puts( "You chose room_search" );
 				room_search();
 				break;
 			case 4:
-				// puts( "You chose desc_search" );
 				desc_search();
 				break;
 		}
 		main_menu();
 	}
-
-	// setup_reservation();
-	// day_search();
-	// room_search();
-	// desc_search();
-
-
-	puts("\n\n");
-	puts( "Printing all reservations" );
-	for( int i = 0; i < resVect_count( &resList ); i++ )
-	{
-		res_print_reservation( resVect_get( &resList, i ) );
-	}
-	puts( "Done printing all reservations" );
-	puts("\n\n");
 
 	int c;
 	puts( "Would you like to save (Y/N)?" );
@@ -664,18 +501,3 @@ int main( int argc, char* argv[] )
 	puts( "Have a great day!" );
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

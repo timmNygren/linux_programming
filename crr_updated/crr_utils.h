@@ -1,13 +1,9 @@
 #ifndef CRR_UTILS_H
 #define CRR_UTILS_H
 
-#define NUM_RESERVATIONS 5
-#define TRUE 1
-#define FALSE 0
 #define BUFFLEN 1024
 
 extern const char* MAIN_MENU[];
-// extern const char* RESERVATION_MENU[];
 
 void main_menu( void );
 void print_format_list( void );

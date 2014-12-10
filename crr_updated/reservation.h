@@ -4,7 +4,6 @@
 #define BUFF 1024
 #define DESC_SIZE 129
 #define ROOM_NAME_LEN 49
-#define ARRAY_OUT_OF_BOUNDS -1
 
 extern char RES_ERROR_STR[BUFF];
 extern int res_lookup_size;
@@ -16,11 +15,12 @@ typedef struct Reservation {
 	char description[DESC_SIZE];
 } reservation;
 
+void res_error( FILE* fp, const char* functionname, int lineno, const char* op );
+time_t to_local( time_t t );
+time_t to_utc( time_t t );
 reservation create_reservation( const char* roomname, const time_t start, const time_t end, const char* desc );
 reservation* update_reservation( reservation* oldreservation, const char* newroomname, const time_t newstart, const time_t newend, const char* newdesc );
 void res_print_reservation( reservation* res );
-time_t to_local( time_t t );
-time_t to_utc( time_t t );
 
 typedef struct Reservation_Vector {
 	reservation* data;

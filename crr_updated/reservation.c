@@ -24,6 +24,22 @@ void res_error( FILE* fp, const char* functionname, int lineno, const char* op )
 	}
 }
 
+time_t to_local( time_t t )
+{
+	struct tm utc;
+	localtime_r( &t, &utc );
+	t += utc.tm_gmtoff;
+	return t;
+}
+
+time_t to_utc( time_t t )
+{
+	struct tm localzone;
+	localtime_r( &t, &localzone );
+	t -= localzone.tm_gmtoff;
+	return t;
+}
+
 reservation create_reservation( const char* roomname, const time_t start, const time_t end, const char* desc )
 {
 	time_t tstart, tend;
@@ -65,22 +81,6 @@ void res_print_reservation( reservation* res )
 
 	printf( "The %s is reserved from: %s to: %s.\n", res->roomname, buff1, buff2 );
 	printf( "\tDescription of the event: %s\n", res->description );
-}
-
-time_t to_local( time_t t )
-{
-	struct tm utc;
-	localtime_r( &t, &utc );
-	t += utc.tm_gmtoff;
-	return t;
-}
-
-time_t to_utc( time_t t )
-{
-	struct tm localzone;
-	localtime_r( &t, &localzone );
-	t -= localzone.tm_gmtoff;
-	return t;
 }
 
 void resVect_init( resVect* v )
@@ -139,7 +139,7 @@ void resVect_set( resVect* v, int index, reservation res )
 {
 	if( index >= v->count || index < 0 )
 	{
-		fprintf( stderr, "%s:%d: index out of bounds\n", __FUNCTION__, __LINE__ );
+		fprintf( stderr, "%s:%d: index out of bounds with index %i.\n", __FUNCTION__, __LINE__, index );
 		snprintf( RES_ERROR_STR, BUFF, "Error inserting a reservation. Quitting the program." );
 		exit(1);
 	}
@@ -150,7 +150,7 @@ reservation* resVect_get( resVect* v, int index )
 {
 	if( index >= v->count || index < 0 )
 	{
-		fprintf( stderr, "%s:%d: index out of bounds\n", __FUNCTION__, __LINE__ );
+		fprintf( stderr, "%s:%d: index out of bounds with index %i.\n", __FUNCTION__, __LINE__, index );
 		snprintf( RES_ERROR_STR, BUFF, "Error retrieving a reservation. Quitting the program." );
 		exit(1);
 	}
@@ -162,7 +162,7 @@ void resVect_delete( resVect* v, int index )
 {
 	if( index >= v->count || index < 0 )
 	{
-		fprintf( stderr, "%s:%d: index out of bounds\n", __FUNCTION__, __LINE__ );
+		fprintf( stderr, "%s:%d: index out of bounds with index %i.\n", __FUNCTION__, __LINE__, index );
 		snprintf( RES_ERROR_STR, BUFF, "Error deleting a reservation. Quitting the program." );
 		exit(1);
 	}
@@ -198,7 +198,7 @@ void resVect_read_file( resVect* v, char* filename )
 
 	if( fseek( fp, 0, SEEK_END ) != 0 )
 	{
-		ERROR_RES( stderr, "index out of bounds" );
+		ERROR_RES( stderr, "index out of bounds in fseek" );
 		snprintf( RES_ERROR_STR, BUFF, "Error reading reservations. Quitting the program." );
 		exit(1);
 	}
@@ -320,11 +320,6 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 {
 	qsort( v->data, v->count, sizeof(reservation), sort_time_name );
 
-	// for( int i = 0; i < v->count; i++ )
-	// {
-	// 	res_print_reservation( resVect_get( v, i ) );
-	// }
-
 	int day_count = 0;
 	int day_size = 5;
 	size_t* res_on_day = NULL;
@@ -334,9 +329,6 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 
 	size_t res_index;
 	if( res ) {
-		// puts( "Found a room on a day." );
-		// printf( "reservation is at index %li\n", res - v->data );
-		// res_print_reservation( res );
 		res_on_day = calloc( day_size, sizeof(size_t) );
 		if( !res_on_day )
 		{
@@ -359,12 +351,12 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 			res_t = v->data[lefti].starttime;
 			res_t = to_local( res_t );
 			localtime_r( &res_t, &res_tm );
-			// printf( "LEFT: Key's day: %d, current reservation day: %d\n", day_key_tm.tm_wday, res_tm.tm_wday );
+
 			if( res_tm.tm_wday != day_key_tm.tm_wday )
 			{
-				// puts( "LEFT: DAYS NOT EQUAL" );
 				break;
 			}
+
 			if( day_count == day_size )
 			{
 				day_size *= 2;
@@ -376,7 +368,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 					exit(1);	
 				}
 			}
-			// printf( "ADDING INDEX %li\n", lefti );
+
 			res_on_day[day_count++] = lefti;		
 			lefti--;
 		}
@@ -388,12 +380,12 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 			res_t = v->data[righti].starttime;
 			res_t = to_local( res_t );
 			localtime_r( &res_t, &res_tm );
-			// printf( "RIGHT: Key's day: %d, current reservation day: %d\n", day_key_tm.tm_wday, res_tm.tm_wday );
+
 			if( res_tm.tm_wday != day_key_tm.tm_wday )
 			{
-				// puts( "RIGHT: DAYS NOT EQUAL" );
 				break;
 			}
+
 			if( day_count == day_size )
 			{
 				day_size *= 2;
@@ -405,19 +397,15 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 					exit(1);	
 				}
 			}
-			// printf( "ADDING INDEX %li\n", righti );
-			res_on_day[day_count++] = righti;
 
+			res_on_day[day_count++] = righti;
 			righti++;
 		}
 
 		qsort( res_on_day, day_count, sizeof(size_t), sort_int );
 
 	}
-	// if( res_on_day )
-	// 	puts( "RES_ON_DAY has rooms" );
-	// else
-	// 	puts( "RES_ON_DAY is NULL" );
+
 	res_lookup_size = day_count;
 	return res_on_day;
 }
@@ -434,13 +422,7 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 
 	res = bsearch( key, v->data, v->count, sizeof(reservation), bsearch_res_room_cmp );
 
-	// if( res )
-	// 	puts( "found a reservation" );
-	// else
-	// 	puts( "didn't find a reservation" );
-
 	size_t resIndex;
-
 	if( res )
 	{
 		resRooms = calloc( resSize, sizeof(size_t) );
@@ -468,14 +450,14 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 		}
 
 		resRooms[resCount++] = resIndex;
-			
+		
+		// Go left
 		size_t lefti = resIndex - 1;
 		while( lefti >= 0 )
 		{
 			
 			if( strcasecmp( key, v->data[lefti].roomname ) != 0 || timeNow >= v->data[lefti].endtime )
 			{
-				// puts( "LEFT: DAYS NOT EQUAL" );
 				break;
 			}
 			if( resCount == resSize )
@@ -489,7 +471,7 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 					exit(1);	
 				}
 			}
-			// printf( "ADDING INDEX %li\n", lefti );
+
 			resRooms[resCount++] = lefti;		
 			lefti--;
 		}
@@ -500,7 +482,6 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 		{
 			if( strcasecmp( key, v->data[righti].roomname ) != 0 )
 			{
-				// puts( "RIGHT: DAYS NOT EQUAL" );
 				break;
 			}
 			if( resCount == resSize )
@@ -514,20 +495,15 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 					exit(1);	
 				}
 			}
-			// printf( "ADDING INDEX %li\n", righti );
-			resRooms[resCount++] = righti;
 
+			resRooms[resCount++] = righti;
 			righti++;
 		}
 
 		qsort( resRooms, resCount, sizeof(size_t), sort_int );
 	}
-	// if( resRooms )
-	// 	puts( "RESROOMS has rooms" );
-	// else
-	// 	puts( "RESROOMS is NULL" );
-	res_lookup_size = resCount;
 
+	res_lookup_size = resCount;
 	return resRooms;
 }
 
@@ -538,10 +514,8 @@ size_t* resVect_select_res_desc( resVect* v, char* key )
 	size_t* resRooms = NULL;
 	for( size_t i = 0; i < v->count; i++)
 	{
-		// puts( "Searching a description" );
 		if( strcasestr( v->data[i].description, key ) )
 		{
-			// puts( "FOUND A DESCRIPTION" );
 			if( resSize == 0 )
 			{
 				resSize = 5;
