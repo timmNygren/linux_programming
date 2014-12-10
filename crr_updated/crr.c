@@ -582,11 +582,12 @@ int main( int argc, char* argv[] )
 	// print_rooms( rooms, numRooms, 1 );
 	// puts( "What would you like to do today?" );
 	main_menu();
+	char buff[BUFFLEN];
 	int choice;
 	while( fgets( buff, BUFFLEN, stdin ) != '\n' )
 	{
 		int err = sscanf(buff, "%d", &choice);
-		if( err != 1 || choice < 1 || choice > sizeof(MAIN_MENU)/sizeof(char*) )
+		if( err != 1 || choice < 1 || choice > 6 )
 		{
 			puts( "Invalid choice." );
 			main_menu();
@@ -627,7 +628,7 @@ int main( int argc, char* argv[] )
 		res_print_reservation( resVect_get( &resList, i ) );
 	}
 	puts("\n\n");
-	
+
 	int c;
 	puts( "Would you like to save (Y/N)?" );
 	while( c = getchar() )
@@ -637,7 +638,7 @@ int main( int argc, char* argv[] )
 		{
 			if( fileChanges )
 			{
-				resVect_write_file( &resList );
+				resVect_write_file( &resList, reservationfilename );
 				puts( "Reservations saved!" );
 			}
 			break;
