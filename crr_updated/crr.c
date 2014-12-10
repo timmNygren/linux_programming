@@ -572,10 +572,12 @@ int main( int argc, char* argv[] )
 	
 
 	puts("\n\n");
+	puts( "Printing all reservations" );
 	for( int i = 0; i < resVect_count( &resList ); i++ )
 	{
 		res_print_reservation( resVect_get( &resList, i ) );
 	}
+	puts( "Done printing reservations" );
 	puts("\n\n");
 
 	puts( "Welcome to Console Room Reservation!\n" );
@@ -611,6 +613,7 @@ int main( int argc, char* argv[] )
 				puts( "You chose desc_search" );
 				break;
 		}
+		main_menu();
 	}
 
 	// setup_reservation();
@@ -623,10 +626,12 @@ int main( int argc, char* argv[] )
 
 
 	puts("\n\n");
+	puts( "Printing all reservations" );
 	for( int i = 0; i < resVect_count( &resList ); i++ )
 	{
 		res_print_reservation( resVect_get( &resList, i ) );
 	}
+	puts( "Done printing all reservations" );
 	puts("\n\n");
 
 	int c;
