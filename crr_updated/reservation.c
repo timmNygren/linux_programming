@@ -349,8 +349,12 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 		size_t lefti = res_index - 1;
 		while( lefti >= 0 )
 		{
+			puts( "INside WHILE" );
 			if( (res_index - 1) < 0 )
+			{
+				puts( "RES_INDEX - 1 IS LESS THAN 0" );
 				break;
+			}
 
 			res_t = v->data[lefti].starttime;
 			res_t = to_local( res_t );
