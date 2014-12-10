@@ -2,12 +2,12 @@
  * Example code for setting flags indicating signal arrival within the context
  * of a curses application.
  */
-#include <string.h>
 #include <ctype.h>
-#include <unistd.h>
-#include <stdlib.h>
 #include <signal.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 #include <ncurses.h>
 
@@ -69,7 +69,7 @@ int n_choices = sizeof(choices) / sizeof(char *);
 void print_menu(WINDOW *menu_win, int highlight)
 {
 	int x, y, i;	
-
+	
 	x = 2;
 	y = 2;
 	//box(menu_win, 0, 0);

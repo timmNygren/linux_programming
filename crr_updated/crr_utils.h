@@ -6,7 +6,7 @@
 #define FALSE 0
 #define BUFFLEN 1024
 
-const char* MAIN_MENU[];
+extern const char* MAIN_MENU[];
 // extern const char* RESERVATION_MENU[];
 
 void main_menu( void );

@@ -4,6 +4,7 @@
 
 #include <ncurses.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "charcell-utils.h"
 
@@ -34,6 +35,32 @@ void cursestring_delete_char( curseString* string )
 void cursestring_get_string( curseString* string, char* dest )
 {
 	strncpy( dest, string->cstring, STRLEN );
+}
+
+void print_save_menu(WINDOW *menu_win, int highlight)
+{
+	int x, y, i;	
+
+	x = 2;
+	y = 2;
+	char* saveMenu[] = { "Yes", "No" };
+	int nChoices = sizeof(saveMenu) / sizeof(char*);
+
+	mvwprintw(menu_win, 1, 2, "Would you like to save? Use arrow keys to go up and down, Press enter to select a choice");
+	for(i = 0; i < nChoices; ++i)
+	{
+		clear_line(menu_win, y);	
+		if(highlight == i + 1) /* High light the present choice */
+		{	
+			wattron(menu_win, A_REVERSE); 
+			mvwprintw(menu_win, y, x, "%s", saveMenu[i]);
+			wattroff(menu_win, A_REVERSE);
+		}
+		else
+			mvwprintw(menu_win, y, x, "%s", saveMenu[i]);
+		++y;
+	}
+	wrefresh(menu_win);
 }
 
 void get_string_input( WINDOW* edit_win, char* dest )

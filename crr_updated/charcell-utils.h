@@ -28,6 +28,8 @@ void cursestring_add_char( curseString* string, char c );
 void cursestring_delete_char( curseString* string );
 void cursestring_get_string( curseString* string, char* dest );
 
+void print_save_menu(WINDOW *menu_win, int highlight);
+
 void get_string_input( WINDOW* edit_win, char* dest );
 
 void draw_borders(WINDOW* screen, char horiz, char vert, char corner);
