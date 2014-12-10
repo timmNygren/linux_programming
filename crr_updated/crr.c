@@ -584,10 +584,10 @@ int main( int argc, char* argv[] )
 	main_menu();
 	char buff[BUFFLEN];
 	int choice;
-	while( fgets( buff, BUFFLEN, stdin ) != '\n' )
+	while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
 	{
 		int err = sscanf(buff, "%d", &choice);
-		if( err != 1 || choice < 1 || choice > sizeof(MAIN_MENU)/sizeof(char*) )
+		if( err != 1 || choice < 1 || choice > 4 )
 		{
 			puts( "Invalid choice." );
 			main_menu();
