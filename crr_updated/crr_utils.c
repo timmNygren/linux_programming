@@ -11,10 +11,19 @@
 #include "crr_utils.h"
 
 const char* MAIN_MENU[] = { "What would you like to do today?", "1. Create a reservation at a particular time.", \
-			 "2. Search all the rooms for one day.", "3. Search for one room over all days.", \
-			 "4. Search the reservations description for a particular reservation.", \
-			 "Quit." };
+			"2. Search all the rooms for one day.", "3. Search for one room over all days.", \
+			"4. Search the reservations description for a particular reservation.", \
+			"Quit." };
 
+const char* VALID_DATE_FORMATS[] = { "List of valid date entries:", "Full weekday name (i.e. Tuesday)", \
+			"Weekday at hour(AM/PM) (i.e. Tuesday at 01PM): hours must be in form 01-12", \
+			"Weekday at hour:minute(AM/PM) (i.e. Tuesday at 01:30PM)", \
+			"Day of Month at hour(AM/PM) (i.e. 10 at 01PM): day of month form 01-31; leading 0 is optional", \
+			"Day of Month at hour:minute(AM/PM) (i.e. 10 at 01:30PM)", \
+			"YYYY/MM/DD hour(AM/PM) (i.e 2014/11/10 06AM)", \
+			"YYYY/MM/DD at hour(AM/PM) (i.e 2014/11/10 at 06AM)", \
+			"YYYY/MM/DD hour:minute(AM/PM) (i.e 2014/11/10 06:30AM)", \
+			"YYYY/MM/DD at hour:minute(AM/PM) (i.e 2014/11/10 at 06:30AM)" };
 // void main_menu( void )
 // {
 // 	for( int i = 0; i < sizeof(MAIN_MENU)/sizeof(char*); i++ )
@@ -31,36 +40,52 @@ void main_menu( WINDOW *menu_win, int highlight )
 	x = 2;
 	y = 2;
 	clear_line( menu_win, 1 );
-	mvwprintw(menu_win, 1, 2, "Welcome to Console Room Reservation! Use arrow keys to go up and down, Press enter to select a choice" );
-	for(i = 0; i < sizeof(MAIN_MENU)/sizeof(char*); i++)
+	mvwprintw( menu_win, 1, 2, "Welcome to Console Room Reservation! Use arrow keys to go up and down, Press enter to select a choice" );
+	for( i = 0; i < sizeof(MAIN_MENU)/sizeof(char*); i++ )
 	{
 		clear_line(menu_win, y);	
 		if( highlight == i ) /* High light the present choice */
 		{	
-			wattron(menu_win, A_REVERSE); 
-			mvwprintw(menu_win, y, x, "%s", MAIN_MENU[i]);
-			wattroff(menu_win, A_REVERSE);
+			wattron( menu_win, A_REVERSE ); 
+			mvwprintw( menu_win, y, x, "%s", MAIN_MENU[i] );
+			wattroff( menu_win, A_REVERSE );
 		}
 		else
-			mvwprintw(menu_win, y, x, "%s", MAIN_MENU[i]);
+			mvwprintw( menu_win, y, x, "%s", MAIN_MENU[i] );
 		++y;
 	}
-	wrefresh(menu_win);
+	wrefresh( menu_win );
 }
 
-void print_format_list( void )
+int print_format_list( WINDOW* displayWin )
 {
-	fputs( "\nList of valid date entries:\n", stdout );
-	fputs( "Full weekday name (i.e. Tuesday)\n", stdout );
-	fputs( "Weekday at hour(AM/PM) (i.e. Tuesday at 01PM): hours must be in form 01-12\n", stdout );
-	fputs( "Weekday at hour:minute(AM/PM) (i.e. Tuesday at 01:30PM)\n", stdout );
-	fputs( "Day of Month at hour(AM/PM) (i.e. 10 at 01PM): day of month form 01-31; leading 0 is optional\n", stdout );
-	fputs( "Day of Month at hour:minute(AM/PM) (i.e. 10 at 01:30PM)\n", stdout );
-	fputs( "YYYY/MM/DD hour(AM/PM) (i.e 2014/11/10 06AM)\n", stdout );
-	fputs( "YYYY/MM/DD at hour(AM/PM) (i.e 2014/11/10 at 06AM)\n", stdout );
-	fputs( "YYYY/MM/DD hour:minute(AM/PM) (i.e 2014/11/10 06:30AM)\n", stdout );
-	fputs( "YYYY/MM/DD at hour:minute(AM/PM) (i.e 2014/11/10 at 06:30AM)\n\n", stdout );
-	fflush( stdout );
+	int x, y, i;
+
+	x = 2;
+	y = 3;
+
+	clear_line( displayWin, 1 );
+	clear_line( displayWin, 2 );
+	mvwprintw( displayWin, 1, 2, "Invalid date. The following list contains valid inputs." );
+	for( i = 0; i < sizeof(VALID_DATE_FORMATS)/sizeof(char*); i++ )
+	{
+		clear_line( displayWin, y );
+		mvwprintw( displayWin, y, x, "%s", VALID_DATE_FORMATS[i] );
+		++y;
+	}
+	wrefresh( displayWin );
+	// fputs( "List of valid date entries:", stdout );
+	// fputs( "Full weekday name (i.e. Tuesday)", stdout );
+	// fputs( "Weekday at hour(AM/PM) (i.e. Tuesday at 01PM): hours must be in form 01-12", stdout );
+	// fputs( "Weekday at hour:minute(AM/PM) (i.e. Tuesday at 01:30PM)", stdout );
+	// fputs( "Day of Month at hour(AM/PM) (i.e. 10 at 01PM): day of month form 01-31; leading 0 is optional", stdout );
+	// fputs( "Day of Month at hour:minute(AM/PM) (i.e. 10 at 01:30PM)", stdout );
+	// fputs( "YYYY/MM/DD hour(AM/PM) (i.e 2014/11/10 06AM)", stdout );
+	// fputs( "YYYY/MM/DD at hour(AM/PM) (i.e 2014/11/10 at 06AM)", stdout );
+	// fputs( "YYYY/MM/DD hour:minute(AM/PM) (i.e 2014/11/10 06:30AM)", stdout );
+	// fputs( "YYYY/MM/DD at hour:minute(AM/PM) (i.e 2014/11/10 at 06:30AM)", stdout );
+	// fflush( stdout );
+	return y;
 }
 
 void crr_print_menu( char** menu, size_t* lookups, int lookups_size, int printNums )

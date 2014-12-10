@@ -34,6 +34,7 @@ char** rooms;
 int numRooms = 0;
 resVect resList;
 
+char crr_error_str[BUFFLEN] = "";
 
 int sigusr1_received = 0;
 int sighup_received = 0;
@@ -125,6 +126,14 @@ void cleanup( void )
 		// clean up from ncurses
 		endwin();
 		puts( RES_ERROR_STR );
+		puts( "Press enter to continue. . ." );
+		getchar();
+	}
+
+	if( strcmp( crr_error_str, "" ) != 0 )
+	{
+		endwin();
+		puts( crr_error_str );
 		puts( "Press enter to continue. . ." );
 		getchar();
 	}
@@ -297,36 +306,57 @@ void add_reservations( void )
 }
 
 // main function
-void setup_reservation( void )
+void setup_reservation( WINDOW* displayWin, WINDOW* editWin )
 {
 	char buff[BUFFLEN];
-	char searchbuff[64];
+	char searchbuff[BUFFLEN];
 	struct tm brokendate;
 	int result;
 	time_t timekey;
-	puts( "Input a date and time to check. Press enter to go back." );
-	while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
+	// puts( "Input a date and time to check. Press enter to go back." );
+	mvwprintw( displayWin, 1, 2, "Enter a date and time to check. Press enter to go back." );
+	wrefresh( displayWin );
+
+
+
+////////////// OLD APPLICATION //////////////////
+	// while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
+	while( 1 )
 	{
-		buff[strlen(buff)-1] = '\0';
+		get_string_input( edit, buff );
+
+		if( strlen( inputstring ) == 0 )
+			break;
+		// buff[strlen(buff)-1] = '\0';
 		result = getdate_r( buff, &brokendate );
 		if( result == 7 || result == 8 )
 		{
-			puts( "Invalid date. The following list contains valid inputs." );
-			print_format_list();
-			puts( "\nEnter a date and time to check or press enter to go back." );
+			
+			// puts( "Invalid date. The following list contains valid inputs." );
+			int nextline = print_format_list( displayWin );
+			nextline+=2;
+			mvwprintw( displayWin, nextline, 2, "Enter a date and time to check or press enter to go back." );
+			// puts( "Enter a date and time to check or press enter to go back." );
+			continue;
 		} else if( result != 0 ) {
 			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/\n", __FUNCTION__, __LINE__, buff, result ); 
-			puts( "Error converting date. Exiting program." );
-			puts( "Press enter to quit. . ." );
-			getchar();
+			snprintf( crr_error_str, BUFFLEN, "Error converting date. Exiting program." );
+			// puts( "Error converting date. Exiting program." );
+			// puts( "Press enter to quit. . ." );
+			// getchar();
 			exit(1);
 		}
-		timekey = mktime( &brokendate );
 
+		timekey = mktime( &brokendate );
 		size_t* roomlookups = resVect_select_room_at_time( &resList, timekey, rooms, numRooms );
 
-		printf( "The following rooms are available on %s.\n", buff );
-		strncpy( searchbuff, buff, 64 );
+		int d = 0;
+		size_display( displayWin, editWin );
+		// printf( "The following rooms are available on %s.\n", buff );
+		snprintf( searchbuff, "The following rooms are available on %s.", buff );
+		mvwprintw( displayWin, d++ + 1, 2, searchbuff );
+		// wrefresh( displayWin );
+		strncpy( searchbuff, buff, BUFFLEN );
 		if( roomlookups )
 		{
 			crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
@@ -721,7 +751,7 @@ int main( int argc, char* argv[] )
 				// puts( "You chose setup_reservation" );
 				mvwprintw( edit, 1, 2, "You chose setup_reservation" );
 				wrefresh( edit );
-				// setup_reservation();
+				setup_reservation();
 				// size_display( display, edit );
 				break;
 			case 2:
@@ -811,7 +841,8 @@ int main( int argc, char* argv[] )
 
 				if( choice == 1 )
 				{
-					resVect_write_file( &resList, reservationfilename );
+					if( fileChanges )
+						resVect_write_file( &resList, reservationfilename );
 					mvwprintw( display, 6, 2, "Reservations saved! Press any key to continue." );
 					wrefresh( display );
 					getch();
@@ -824,20 +855,6 @@ int main( int argc, char* argv[] )
 				}
 
 				print_save_menu( display, highlight );
-
-				// clear_input_buffer();
-				// if( c == 'y' || c == 'Y' )
-				// {
-				// 	if( fileChanges )
-				// 	{
-				// 		resVect_write_file( &resList, reservationfilename );
-				// 		puts( "Reservations saved!" );
-				// 	}
-				// 	break;
-				// } else if( c == 'n' || c == 'N' ) {
-				// 	break;
-				// }
-				// puts( "Please enter Y or N to save." );
 			}
 
 			break;
@@ -848,127 +865,11 @@ int main( int argc, char* argv[] )
 			highlight = 1;
 			choice = 0;
 		}
-		//main_menu( display, highlight );
-		// if( choice != 0 && choice != n_choices )
-		// {
-		// 	dispheight = size_display( display, edit );
-		// 	//clear_line( display, 8 );
-		// 	//snprintf( buf, BUFLEN, "You chose choice %d with choice string %s", choice, choices[choice-1] );
-		// 	strncpy( buf, "Enter a string", BUFLEN );
-		// 	mvwprintw( display, 2, 2, buf );
-		// 	wrefresh( display );
-
-		// 	get_string_input( edit, inputstring );
-
-		// 	if( strlen( inputstring ) == 0 )
-		// 		strncpy( buf, "You didn't type anything", BUFLEN );
-		// 	else
-		// 		snprintf( buf, BUFLEN, "You typed string: %s", inputstring );
-
-		// 	mvwprintw( display, 3, 2, buf );
-		// 	wrefresh( display );
-
-			
-		// 	getch();
-		// 	choice = 0;
-		// } 
 		main_menu( display, highlight );
 	}
 
-	// size_display( display, edit ); // Clear both screens
-	// nChoices = 2;
-	// highlight = 1;
-	// choice = 0;
-	// int c;
-	// mvwprintw( display, 1, 2, "Would you like to save?" );
-	// puts( "Would you like to save (Y/N)?" );
-	// print_save_menu( display, highlight );
-	// while( ch = getchar() )
-	// {
-	// 	switch (ch) {
-	// 		case KEY_RESIZE:
-	// 			dispheight = size_display( display, edit );
-	// 			d = 0;
-	// 			// strncpy( buf, "KEY_RESIZE", BUFLEN );
-	// 			// mvwprintw( display, d++ + 2, 2, buf );
-	// 			// d = d % dispheight;
-	// 			if( sighup_received ) {
-	// 				// snprintf( buf, BUFLEN, "Received SIGHUP %lu", (unsigned long)time(NULL) );
-	// 				// mvwprintw( display, d++ + 2, 2, buf );
-	// 				// d = d % dispheight;
-	// 				sighup_received = 0;
-	// 			}
-	// 			if( sigusr1_received ) {
-	// 				// snprintf( buf, BUFLEN, "Received SIGUSR1 %lu", (unsigned long)time(NULL) );
-	// 				// mvwprintw( display, d++ + 2, 2, buf );
-	// 				// d = d % dispheight;
-	// 				sigusr1_received = 0;
-	// 			}
-	// 			wrefresh(display);
-	// 			break;
-	// 		case KEY_UP:
-	// 			if( highlight == 1 )
-	// 				highlight = nChoices;
-	// 			else
-	// 				--highlight;
-	// 			strncpy( buf, "KEY_UP", BUFLEN );
-	// 			mvwprintw( edit, 1, 2, buf );
-
-	// 			wrefresh(edit);
-	// 			break;
-	// 		case KEY_DOWN:
-	// 			if( highlight == nChoices )
-	// 				highlight = 1;
-	// 			else 
-	// 				++highlight;
-	// 			strncpy( buf, "KEY_DOWN", BUFLEN );
-	// 			mvwprintw( edit, 1, 2, buf );
-
-	// 			wrefresh(edit);
-	// 			break;
-	// 		case 10:
-	// 			choice = highlight;
-	// 			strncpy( buf, "KEY_ENTER", BUFLEN );
-	// 			mvwprintw( edit, 1, 2, buf );
-
-	// 			wrefresh(edit);
-	// 			break;
-	// 	}
-
-	// 	if( choice == 1 )
-	// 	{
-	// 		resVect_write_file( &resList, reservationfilename );
-	// 		mvwprintw( display, 2, 2, "Reservations saved!" );
-	// 		wrefresh( display );
-	// 		break;
-	// 	} else if( choice == 2 ) {
-	// 		mvwprintw( display, 2, 2, "You're reservations will not be saved." );
-	// 		wrefresh( display );
-	// 		break;
-	// 	}
-
-	// 	print_save_menu( display, highlight );
-
-	// 	// clear_input_buffer();
-	// 	// if( c == 'y' || c == 'Y' )
-	// 	// {
-	// 	// 	if( fileChanges )
-	// 	// 	{
-	// 	// 		resVect_write_file( &resList, reservationfilename );
-	// 	// 		puts( "Reservations saved!" );
-	// 	// 	}
-	// 	// 	break;
-	// 	// } else if( c == 'n' || c == 'N' ) {
-	// 	// 	break;
-	// 	// }
-	// 	// puts( "Please enter Y or N to save." );
-	// }
-
-
-
 	// close curses lib, reset terminal
 	endwin();
-
 
 
 
