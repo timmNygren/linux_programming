@@ -757,7 +757,7 @@ int main( int argc, char* argv[] )
 			choice = 0;
 
 			print_save_menu( display, highlight );
-			while( ch = getchar() )
+			while( ch = getch() )
 			{
 				switch (ch) {
 					case KEY_RESIZE:
