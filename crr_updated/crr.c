@@ -332,6 +332,7 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 	{
 		int choice = 0;
 
+		puts("");
 		crr_print_reservations( &resList, roomlookups, res_lookup_size );
 		puts( "\nPick a reservation." );
 		while( fgets( buff, BUFFLEN, stdin ) )
@@ -339,9 +340,9 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 			int err = sscanf( buff, "%d", &choice );
 			if( err != 1 || choice < 1 || choice > res_lookup_size )
 			{
-				puts( "Invalid choice." );
+				puts( "\nInvalid choice.\n" );
 				crr_print_reservations( &resList, roomlookups, res_lookup_size );
-				puts( "\nPick a reservation." );
+				puts( "Pick a reservation." );
 				continue;
 			}
 			break;
@@ -349,23 +350,23 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 		choice--;
 		printf( "Your choice was %d\n", choice );
 		int update;
-		puts( "Would you like to update or delete?" );
+		puts( "\nWould you like to update or delete?" );
 		puts( "1. Update" );
 		puts( "2. Delete" );
 
 		while( fgets( buff, BUFFLEN, stdin ) )
 		{
-			if( strlen(buff) > 2 )
-			{
-				puts( "Invalid choice" );
-				puts( "Would you like to update or delete?" );
-				puts( "1. Update\n2. Delete" );	
-				continue;			
-			}
+			// if( strlen(buff) > 2 )
+			// {
+			// 	puts( "\nInvalid choice\n" );
+			// 	puts( "Would you like to update or delete?" );
+			// 	puts( "1. Update\n2. Delete" );	
+			// 	continue;			
+			// }
 			int err = sscanf( buff, "%d", &update );
 			if( err != 1 || update < 1 || update > 2 )
 			{
-				puts( "Invalid choice" );
+				puts( "\nInvalid choice\n" );
 				puts( "Would you like to update or delete?" );
 				puts( "1. Update\n2. Delete" );	
 				continue;
@@ -377,14 +378,14 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 		int room;
 		if( update == 1 )
 		{
-			puts( "Pick a room:" );
+			puts( "\nPick a room:" );
 			print_rooms( rooms, numRooms, 1 );
 			while( fgets( buff, BUFFLEN, stdin ) )
 			{
 				int err = sscanf(buff, "%d", &room);
 				if( err != 1 || room < 1 || room > numRooms )
 				{
-					puts( "Invalid room id." );
+					puts( "\nInvalid room id.\n" );
 					puts( "The following rooms are:" );
 					print_rooms( rooms, numRooms, 1 );
 					continue;
@@ -397,19 +398,19 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 
 			if( conflict )
 			{
-				puts( "There was a conflicting reservation:" );
+				puts( "\nThere was a conflicting reservation:" );
 				res_print_reservation( conflict );
 			} else {
 				fileChanges = 1;
-				puts( "Your reservation has been updated!" );
+				puts( "\nYour reservation has been updated!\n" );
 			}
 		} else {
 			resVect_delete( &resList, roomlookups[choice] );
 			fileChanges = 1;
-			puts( "The reservation was deleted." );
+			puts( "\nThe reservation was deleted.\n" );
 		}
 	} else
-		puts( "There were no reservations found" );
+		puts( "\nThere were no reservations found\n" );
 }
 
 void day_search( void )
@@ -419,7 +420,7 @@ void day_search( void )
 	struct tm brokendate;
 	int result;
 	time_t key;
-	puts( "Enter a day of the week to check reservation. Press enter to go back." );
+	puts( "\nEnter a day of the week to check reservation. Press enter to go back." );
 	
 	while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
 	{
@@ -428,13 +429,13 @@ void day_search( void )
 		result = getdate_r( buff, &brokendate );
 		if( result == 7 || result == 8 )
 		{
-			puts( "Invalid input." );
+			puts( "\nInvalid input.\n" );
 			// puts( "Enter a day of the week to check reservations. Press enter to go back." );
 			puts( "Enter a day of the week to check reservation. Press enter to go back." );
 			continue;
 		} else if( result != 0 ) {
 			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/\n", __FUNCTION__, __LINE__, buff, result ); 
-			puts( "Error converting date. Exiting program." );
+			puts( "\nError converting date. Exiting program." );
 			puts( "Press enter to quit. . ." );
 			getchar();
 			exit(1);
