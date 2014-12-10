@@ -275,7 +275,17 @@ void setup_reservation( void )
 		{
 			if( strlen(buff) > 2 )
 			{
-				puts( "Not a valid input" );
+				puts( "\nNot a valid input\n" );
+				printf( "The following rooms are available on %s.\n", buff );
+				// strncpy( searchbuff, buff, 64 );
+				if( roomlookups )
+				{
+					crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
+				} else {
+					print_rooms( rooms, numRooms, 1 );
+					// res_lookup_size = numRooms;
+				}
+				puts( "Press enter to go back." );
 				continue;
 			}
 
@@ -284,7 +294,14 @@ void setup_reservation( void )
 			{
 				puts( "Invalid room id.\n" );
 				puts( "The following rooms are available" );
-				crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
+				// crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
+				if( roomlookups )
+				{
+					crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
+				} else {
+					print_rooms( rooms, numRooms, 1 );
+					// res_lookup_size = numRooms;
+				}
 				puts( "Press enter to go back." );
 				continue;
 			}
@@ -292,7 +309,6 @@ void setup_reservation( void )
 			char* roomname;
 			if( roomlookups )
 				roomname = rooms[ roomlookups[room] ];
-
 			else
 				roomname = rooms[room];
 
@@ -300,9 +316,9 @@ void setup_reservation( void )
 			reservation* conflict = resVect_add( &resList, res );
 			if( conflict )
 			{
-				puts( "There was a conflicting reservation:" );
+				puts( "\nThere was a conflicting reservation:" );
 				res_print_reservation( conflict );
-				printf( "The following rooms are available on %s.\n", searchbuff );
+				printf( "\nThe following rooms are available on %s.\n", searchbuff );
 				if( roomlookups )
 					crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
 				else
