@@ -338,6 +338,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 		}
 		printf( "FOUND RES ON DAY SEARCH. Index is %li\n", res - v->data);
 		res_index = res - v->data;
+		printf( "ADDING INDEX %li\n", res_index );
 		res_on_day[day_count++] = res_index;
 
 		// Go left
@@ -369,6 +370,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 				}
 			}
 
+			printf( "ADDING INDEX GOING LEFT %li\n", lefti );
 			res_on_day[day_count++] = lefti;		
 			lefti--;
 		}
@@ -398,6 +400,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 				}
 			}
 
+			printf( "ADDING INDEX GOING RIGHT %li\n", righti );
 			res_on_day[day_count++] = righti;
 			righti++;
 		}
@@ -405,6 +408,9 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 		qsort( res_on_day, day_count, sizeof(size_t), sort_int );
 
 	}
+
+	for( int i = 0; i < day_count; i++ )
+		printf( "INDEX at %i is %li\n", i, res_on_day[i] );
 
 	res_lookup_size = day_count;
 	return res_on_day;
