@@ -65,6 +65,7 @@ time_t get_start_time( void )
 	time_t currentTime = time( NULL );
 	time_t startTime;
 	struct tm tempTM;
+	
 	puts( "\nEnter a start date:" );
 	// fflush( stdout );
 	while( fgets( buf, BUFFLEN, stdin ) )

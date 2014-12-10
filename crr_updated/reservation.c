@@ -1,8 +1,8 @@
-#include <time.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
+#include <time.h>
 
 #include "search_sort_utils.h"
 #include "reservation.h"
@@ -336,7 +336,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 			snprintf( RES_ERROR_STR, BUFF, "Error retrieving available reservations on a particular day. Quitting the program." );
 			exit(1);
 		}
-
+		printf( "FOUND RES ON DAY SEARCH. Index is %li\n", res - v->data);
 		res_index = res - v->data;
 		res_on_day[day_count++] = res_index;
 
