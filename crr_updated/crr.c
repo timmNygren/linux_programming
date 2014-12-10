@@ -654,6 +654,7 @@ int main( int argc, char* argv[] )
 	int highlight = 1;
 	int choice = 0;
 	int ch;
+	main_menu( display, highlight );
 	while( ch = getch() ) {
 		switch (ch) {
 			case KEY_RESIZE:
@@ -838,9 +839,6 @@ int main( int argc, char* argv[] )
 				// }
 				// puts( "Please enter Y or N to save." );
 			}
-
-
-
 
 			break;
 		}	// End choice or F10
