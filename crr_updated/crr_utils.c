@@ -76,6 +76,7 @@ time_t get_start_time( void )
 		{
 			puts( "Invalid format" );
 			print_format_list();
+			puts( "\nEnter a start date:" );
 			continue;
 		} else if( err != 0 ) {
 			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/\n", __FUNCTION__, __LINE__, buf, err ); 
@@ -113,6 +114,8 @@ time_t get_end_time( void )
 		{
 			puts( "Invalid format" );
 			print_format_list();
+			puts( "\nEnter an end date:" );
+			fflush( stdout );
 			continue;
 		} else if( err != 0 ) {
 			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/\n", __FUNCTION__, __LINE__, buf, err ); 
