@@ -320,10 +320,10 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 {
 	qsort( v->data, v->count, sizeof(reservation), sort_time_name );
 
-	for( int i = 0; i < v->count; i++ )
-	{
-		res_print_reservation( resVect_get( v, i ) );
-	}
+	// for( int i = 0; i < v->count; i++ )
+	// {
+	// 	res_print_reservation( resVect_get( v, i ) );
+	// }
 
 	int day_count = 0;
 	int day_size = 5;

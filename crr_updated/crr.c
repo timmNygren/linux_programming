@@ -332,7 +332,7 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 	{
 		int choice = 0;
 
-		puts("");
+		puts("\nHere are the rooms reserved on the specified day.");
 		crr_print_reservations( &resList, roomlookups, res_lookup_size );
 		puts( "\nPick a reservation." );
 		while( fgets( buff, BUFFLEN, stdin ) )
@@ -342,7 +342,7 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 			{
 				puts( "\nInvalid choice.\n" );
 				crr_print_reservations( &resList, roomlookups, res_lookup_size );
-				puts( "Pick a reservation." );
+				puts( "\nPick a reservation." );
 				continue;
 			}
 			break;
@@ -351,18 +351,10 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 		printf( "Your choice was %d\n", choice );
 		int update;
 		puts( "\nWould you like to update or delete?" );
-		puts( "1. Update" );
-		puts( "2. Delete" );
+		puts( "1. Update\n2. Delete" );
 
 		while( fgets( buff, BUFFLEN, stdin ) )
 		{
-			// if( strlen(buff) > 2 )
-			// {
-			// 	puts( "\nInvalid choice\n" );
-			// 	puts( "Would you like to update or delete?" );
-			// 	puts( "1. Update\n2. Delete" );	
-			// 	continue;			
-			// }
 			int err = sscanf( buff, "%d", &update );
 			if( err != 1 || update < 1 || update > 2 )
 			{
@@ -408,8 +400,8 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 			resVect_delete( &resList, roomlookups[choice] );
 			fileChanges = 1;
 			puts( "\nThe reservation was deleted.\n" );
-		}
-	} else
+		} // update == 1
+	} else	// roomlookups
 		puts( "\nThere were no reservations found\n" );
 }
 
@@ -429,9 +421,9 @@ void day_search( void )
 		result = getdate_r( buff, &brokendate );
 		if( result == 7 || result == 8 )
 		{
-			puts( "\nInvalid input.\n" );
+			// puts( "\nInvalid input.\n" );
 			// puts( "Enter a day of the week to check reservations. Press enter to go back." );
-			puts( "Enter a day of the week to check reservation. Press enter to go back." );
+			puts( "\nPlease enter a day of the week (Monday, Tuesday...) to check reservation. Press enter to go back." );
 			continue;
 		} else if( result != 0 ) {
 			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/\n", __FUNCTION__, __LINE__, buff, result ); 
