@@ -66,7 +66,7 @@ time_t get_start_time( void )
 	time_t currentTime = time( NULL );
 	time_t startTime;
 	struct tm tempTM;
-	puts( "Enter a start date:" );
+	puts( "\nEnter a start date:" );
 	fflush( stdout );
 	while( fgets( buf, BUFFLEN, stdin ) )
 	{
@@ -103,7 +103,7 @@ time_t get_end_time( void )
 	int err;
 	time_t endTime;
 	struct tm tempTM;
-	puts( "Enter an end date:" );
+	puts( "\nEnter an end date:" );
 	fflush( stdout );
 	while( fgets( buf, BUFFLEN, stdin ) )
 	{

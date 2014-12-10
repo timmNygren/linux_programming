@@ -248,6 +248,7 @@ void setup_reservation( void )
 			puts( "Invalid date. The following list contains valid inputs." );
 			print_format_list();
 			puts( "\nEnter a date and time to check or press enter to go back." );
+			continue;
 		} else if( result != 0 ) {
 			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/\n", __FUNCTION__, __LINE__, buff, result ); 
 			puts( "Error converting date. Exiting program." );
@@ -591,7 +592,7 @@ int main( int argc, char* argv[] )
 		int err = sscanf(buff, "%d", &choice);
 		if( err != 1 || choice < 1 || choice > 4 )
 		{
-			puts( "Invalid choice." );
+			puts( "\nInvalid choice.\n" );
 			main_menu();
 			// puts( "The following rooms are:" );
 			// print_rooms( rooms, numRooms, 1 );
@@ -624,9 +625,6 @@ int main( int argc, char* argv[] )
 	// day_search();
 	// room_search();
 	// desc_search();
-
-
-
 
 
 	puts("\n\n");
