@@ -1,6 +1,7 @@
+#include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
+#include <time.h>
 
 #include "reservation.h"
 #include "search_sort_utils.h"
