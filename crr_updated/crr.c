@@ -1,22 +1,9 @@
-/**
- * Project 1 CRR application using ncurses library
- *
- * Author: Timm Nygren
- * 
- *
- */
-#include <ctype.h>
 #include <errno.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-
-#include <ncurses.h>
-
-#include "charcell-utils.h"
 
 #include "reservation.h"
 #include "crr_utils.h"
@@ -33,58 +20,6 @@ char* reservationfilename;
 char** rooms;
 int numRooms = 0;
 resVect resList;
-
-
-int sigusr1_received = 0;
-int sighup_received = 0;
-void signal_catcher( int signum )
-{
-	switch( signum ) {
-		case SIGHUP : sighup_received = 1; break;
-		case SIGUSR1 : sigusr1_received = 1; break;
-	}
-	/***
-	 * The "kick in the pants" trick.  We send ourselves a SIGWINCH 
-	 * to make sure that getch() in our primary process thread has a "key"
-	 * to return.
-	 *
-	 * Otherwise we would have to wait around until the window *really* changed
-	 * or a key press was sent to the terminal.  Either way would result in a clunky user
-	 * interface experience.
-	 *
-	 * Note that raise(2) IS async signal safe (see signal(7)).
-	 */
-	raise( SIGWINCH );
-}
-
-void install_handler( int signum )
-{
-	/***
-	 * setup a signal handler --- always use sigaction, avoid signal(2)
-	 *
-	 * another equally valid approach is to setup an independent handler for
-	 * each signal.  one handler seems easier to explain in lecture.
-	 */
-	struct sigaction act;
-	memset( &act, 0, sizeof(act) );
-
-	act.sa_handler = signal_catcher;   // set the function to call on signal
-
-	// prevent reentrant signals --- wise to do whether you are using one or 
-	// multiple signal handler functions
-	sigfillset( &act.sa_mask );
-
-	/***
-	 * NOTE:  in order for the SIGWINCH "kick in the pants" trick to work, we 
-	 * don't want the ncurses read(2) command to restart.  So DON'T set SA_RESTART
-	 * for these signal handlers!
-	 */
-
-	if( sigaction( signum, &act, NULL )) {
-		perror("sigaction" );
-		exit(1);
-	}
-}
 
 #define ERROR_CRR( fp, ...) crr_error( fp, __FUNCTION__, __LINE__, __VA_ARGS__ "" )
 
@@ -123,7 +58,6 @@ void cleanup( void )
 	if( strcmp( RES_ERROR_STR, "" ) != 0 )
 	{
 		// clean up from ncurses
-		endwin();
 		puts( RES_ERROR_STR );
 		puts( "Press enter to continue. . ." );
 		getchar();
@@ -622,14 +556,6 @@ void init( int argc, char* argv[] )
 	resVect_check_consistency( &resList, rooms, numRooms );
 
 	// init ncurses interface
-	initscr();
-	noecho();
-	cbreak();
-	keypad(stdscr,TRUE);		// For arrows and enter/backspace for menu navigation and input
-	curs_set(FALSE);
-
-	install_handler( SIGHUP );
-	install_handler( SIGUSR1 );
 }
 
 void clear_input_buffer( void )
@@ -645,419 +571,91 @@ int main( int argc, char* argv[] )
 	init( argc, argv );
 	
 
+	puts("\n\n");
+	puts( "Printing all reservations" );
+	for( int i = 0; i < resVect_count( &resList ); i++ )
+	{
+		res_print_reservation( resVect_get( &resList, i ) );
+	}
+	puts( "Done printing reservations" );
+	puts("\n\n");
 
-	WINDOW* display = newwin(1, 1, 0, 0 );
-	WINDOW* edit = newwin(1,1, 0, 0 );
-	int dispheight = size_display( display, edit );
-	char buf[BUFFLEN];
-	int nChoices = 5;
-	int highlight = 1;
-	int choice = 0;
-	int ch;
-	main_menu( display, highlight );
-	while( ch = getch() ) {
-		switch (ch) {
-			case KEY_RESIZE:
-				dispheight = size_display( display, edit );
-				// d = 0;
-				// strncpy( buf, "KEY_RESIZE", BUFLEN );
-				// mvwprintw( display, d++ + 2, 2, buf );
-				// d = d % dispheight;
-				if( sighup_received ) {
-					// snprintf( buf, BUFLEN, "Received SIGHUP %lu", (unsigned long)time(NULL) );
-					// mvwprintw( display, d++ + 2, 2, buf );
-					// d = d % dispheight;
-					sighup_received = 0;
-				}
-				if( sigusr1_received ) {
-					// snprintf( buf, BUFLEN, "Received SIGUSR1 %lu", (unsigned long)time(NULL) );
-					// mvwprintw( display, d++ + 2, 2, buf );
-					// d = d % dispheight;
-					sigusr1_received = 0;
-				}
-				// wrefresh(display);
-				break;
-			case KEY_UP:
-				if( highlight == 1 )
-					highlight = nChoices;
-				else
-					--highlight;
-				strncpy( buf, "KEY_UP", BUFFLEN );
-				mvwprintw( edit, 1, 2, buf );
-
-				wrefresh(edit);
-				break;
-				// mvwprintw( display, d++ + 2, 2, buf );
-				// d = d % dispheight;
-				break;
-			case KEY_DOWN:
-				if( highlight == nChoices )
-					highlight = 1;
-				else 
-					++highlight;
-				strncpy( buf, "KEY_DOWN", BUFFLEN );
-				mvwprintw( edit, 1, 2, buf );
-
-				wrefresh(edit);
-				break;
-				// mvwprintw( display, d++ + 2, 2, buf );
-				// d = d % dispheight;
-				// wrefresh(display);
-				// break;
-			case 10:
-				choice = highlight;
-				strncpy( buf, "KEY_ENTER", BUFFLEN );
-				mvwprintw( edit, 1, 2, buf );
-				wrefresh(edit);
-				break;
-				// mvwprintw( display, d++ + 2, 2, buf );
-				// d = d % dispheight;
-				// wrefresh(display);
-				// break;
+	puts( "Welcome to Console Room Reservation!\n" );
+	// print_rooms( rooms, numRooms, 1 );
+	// puts( "What would you like to do today?" );
+	main_menu();
+	char buff[BUFFLEN];
+	int choice;
+	while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
+	{
+		int err = sscanf(buff, "%d", &choice);
+		if( err != 1 || choice < 1 || choice > 4 )
+		{
+			puts( "Invalid choice." );
+			main_menu();
+			// puts( "The following rooms are:" );
+			// print_rooms( rooms, numRooms, 1 );
+			continue;
 		}
-
+		// room--;	// Make 0 offset
+		// break;
 		switch( choice ) {
 			case 1:
 				// puts( "You chose setup_reservation" );
-				mvwprintw( edit, 1, 2, "You chose setup_reservation" );
-				wrefresh( edit );
-				// setup_reservation();
-				// size_display( display, edit );
+				setup_reservation();
 				break;
 			case 2:
 				// puts( "You chose day_search" );
-				mvwprintw( edit, 1, 2, "You chose day_search" );
-				wrefresh( edit );
-				// day_search();
-				// size_display( display, edit );
+				day_search();
 				break;
 			case 3:
 				// puts( "You chose room_search" );
-				mvwprintw( edit, 1, 2, "You chose room_search" );
-				wrefresh( edit );
-				// room_search();
-				// size_display( display, edit );
+				room_search();
 				break;
 			case 4:
 				// puts( "You chose desc_search" );
-				mvwprintw( edit, 1, 2, "You chose desc_search" );
-				wrefresh( edit );
-				// desc_search();
-				// size_display( display, edit );
+				desc_search();
 				break;
 		}
-
-		// User chose exit or pressed F10
-		if( choice == 5 || choice == KEY_F(10) )
-		{
-
-			size_display( display, edit ); // Clear both screens
-			nChoices = 2;
-			highlight = 1;
-			choice = 0;
-
-			print_save_menu( display, highlight );
-			while( ch = getch() )
-			{
-				switch (ch) {
-					case KEY_RESIZE:
-						dispheight = size_display( display, edit );
-						// d = 0;
-						// strncpy( buf, "KEY_RESIZE", BUFLEN );
-						// mvwprintw( display, d++ + 2, 2, buf );
-						// d = d % dispheight;
-						if( sighup_received ) {
-							// snprintf( buf, BUFLEN, "Received SIGHUP %lu", (unsigned long)time(NULL) );
-							// mvwprintw( display, d++ + 2, 2, buf );
-							// d = d % dispheight;
-							sighup_received = 0;
-						}
-						if( sigusr1_received ) {
-							// snprintf( buf, BUFLEN, "Received SIGUSR1 %lu", (unsigned long)time(NULL) );
-							// mvwprintw( display, d++ + 2, 2, buf );
-							// d = d % dispheight;
-							sigusr1_received = 0;
-						}
-						// wrefresh(display);
-						break;
-					case KEY_UP:
-						if( highlight == 1 )
-							highlight = nChoices;
-						else
-							--highlight;
-						strncpy( buf, "KEY_UP", BUFFLEN );
-						mvwprintw( edit, 1, 2, buf );
-
-						wrefresh(edit);
-						break;
-					case KEY_DOWN:
-						if( highlight == nChoices )
-							highlight = 1;
-						else 
-							++highlight;
-						strncpy( buf, "KEY_DOWN", BUFFLEN );
-						mvwprintw( edit, 1, 2, buf );
-
-						wrefresh(edit);
-						break;
-					case 10:
-						choice = highlight;
-						strncpy( buf, "KEY_ENTER", BUFFLEN );
-						mvwprintw( edit, 1, 2, buf );
-
-						wrefresh(edit);
-						break;
-				}
-
-				if( choice == 1 )
-				{
-					resVect_write_file( &resList, reservationfilename );
-					mvwprintw( display, 6, 2, "Reservations saved! Press any key to continue." );
-					wrefresh( display );
-					getch();
-					break;
-				} else if( choice == 2 ) {
-					mvwprintw( display, 6, 2, "You're reservations will not be saved. Press any key to continue." );
-					wrefresh( display );
-					getch();
-					break;
-				}
-
-				print_save_menu( display, highlight );
-
-				// clear_input_buffer();
-				// if( c == 'y' || c == 'Y' )
-				// {
-				// 	if( fileChanges )
-				// 	{
-				// 		resVect_write_file( &resList, reservationfilename );
-				// 		puts( "Reservations saved!" );
-				// 	}
-				// 	break;
-				// } else if( c == 'n' || c == 'N' ) {
-				// 	break;
-				// }
-				// puts( "Please enter Y or N to save." );
-			}
-
-			break;
-		}	// End choice or F10
-
-		if( choice != 0 )
-		{
-			highlight = 1;
-			choice = 0;
-		}
-		//main_menu( display, highlight );
-		// if( choice != 0 && choice != n_choices )
-		// {
-		// 	dispheight = size_display( display, edit );
-		// 	//clear_line( display, 8 );
-		// 	//snprintf( buf, BUFLEN, "You chose choice %d with choice string %s", choice, choices[choice-1] );
-		// 	strncpy( buf, "Enter a string", BUFLEN );
-		// 	mvwprintw( display, 2, 2, buf );
-		// 	wrefresh( display );
-
-		// 	get_string_input( edit, inputstring );
-
-		// 	if( strlen( inputstring ) == 0 )
-		// 		strncpy( buf, "You didn't type anything", BUFLEN );
-		// 	else
-		// 		snprintf( buf, BUFLEN, "You typed string: %s", inputstring );
-
-		// 	mvwprintw( display, 3, 2, buf );
-		// 	wrefresh( display );
-
-			
-		// 	getch();
-		// 	choice = 0;
-		// } 
-		main_menu( display, highlight );
+		main_menu();
 	}
 
-	// size_display( display, edit ); // Clear both screens
-	// nChoices = 2;
-	// highlight = 1;
-	// choice = 0;
-	// int c;
-	// mvwprintw( display, 1, 2, "Would you like to save?" );
-	// puts( "Would you like to save (Y/N)?" );
-	// print_save_menu( display, highlight );
-	// while( ch = getchar() )
-	// {
-	// 	switch (ch) {
-	// 		case KEY_RESIZE:
-	// 			dispheight = size_display( display, edit );
-	// 			d = 0;
-	// 			// strncpy( buf, "KEY_RESIZE", BUFLEN );
-	// 			// mvwprintw( display, d++ + 2, 2, buf );
-	// 			// d = d % dispheight;
-	// 			if( sighup_received ) {
-	// 				// snprintf( buf, BUFLEN, "Received SIGHUP %lu", (unsigned long)time(NULL) );
-	// 				// mvwprintw( display, d++ + 2, 2, buf );
-	// 				// d = d % dispheight;
-	// 				sighup_received = 0;
-	// 			}
-	// 			if( sigusr1_received ) {
-	// 				// snprintf( buf, BUFLEN, "Received SIGUSR1 %lu", (unsigned long)time(NULL) );
-	// 				// mvwprintw( display, d++ + 2, 2, buf );
-	// 				// d = d % dispheight;
-	// 				sigusr1_received = 0;
-	// 			}
-	// 			wrefresh(display);
-	// 			break;
-	// 		case KEY_UP:
-	// 			if( highlight == 1 )
-	// 				highlight = nChoices;
-	// 			else
-	// 				--highlight;
-	// 			strncpy( buf, "KEY_UP", BUFLEN );
-	// 			mvwprintw( edit, 1, 2, buf );
-
-	// 			wrefresh(edit);
-	// 			break;
-	// 		case KEY_DOWN:
-	// 			if( highlight == nChoices )
-	// 				highlight = 1;
-	// 			else 
-	// 				++highlight;
-	// 			strncpy( buf, "KEY_DOWN", BUFLEN );
-	// 			mvwprintw( edit, 1, 2, buf );
-
-	// 			wrefresh(edit);
-	// 			break;
-	// 		case 10:
-	// 			choice = highlight;
-	// 			strncpy( buf, "KEY_ENTER", BUFLEN );
-	// 			mvwprintw( edit, 1, 2, buf );
-
-	// 			wrefresh(edit);
-	// 			break;
-	// 	}
-
-	// 	if( choice == 1 )
-	// 	{
-	// 		resVect_write_file( &resList, reservationfilename );
-	// 		mvwprintw( display, 2, 2, "Reservations saved!" );
-	// 		wrefresh( display );
-	// 		break;
-	// 	} else if( choice == 2 ) {
-	// 		mvwprintw( display, 2, 2, "You're reservations will not be saved." );
-	// 		wrefresh( display );
-	// 		break;
-	// 	}
-
-	// 	print_save_menu( display, highlight );
-
-	// 	// clear_input_buffer();
-	// 	// if( c == 'y' || c == 'Y' )
-	// 	// {
-	// 	// 	if( fileChanges )
-	// 	// 	{
-	// 	// 		resVect_write_file( &resList, reservationfilename );
-	// 	// 		puts( "Reservations saved!" );
-	// 	// 	}
-	// 	// 	break;
-	// 	// } else if( c == 'n' || c == 'N' ) {
-	// 	// 	break;
-	// 	// }
-	// 	// puts( "Please enter Y or N to save." );
-	// }
-
-
-
-	// close curses lib, reset terminal
-	endwin();
-
-
-
-
-///////// OLD APPLICATION /////////////
-	// puts("\n\n");
-	// puts( "Printing all reservations" );
-	// for( int i = 0; i < resVect_count( &resList ); i++ )
-	// {
-	// 	res_print_reservation( resVect_get( &resList, i ) );
-	// }
-	// puts( "Done printing reservations" );
-	// puts("\n\n");
-
-	// puts( "Welcome to Console Room Reservation!\n" );
-	// // print_rooms( rooms, numRooms, 1 );
-	// // puts( "What would you like to do today?" );
-	// main_menu();
-	// char buff[BUFFLEN];
-	// int choice;
-	// while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
-	// {
-	// 	int err = sscanf(buff, "%d", &choice);
-	// 	if( err != 1 || choice < 1 || choice > 4 )
-	// 	{
-	// 		puts( "Invalid choice." );
-	// 		main_menu();
-	// 		// puts( "The following rooms are:" );
-	// 		// print_rooms( rooms, numRooms, 1 );
-	// 		continue;
-	// 	}
-	// 	// room--;	// Make 0 offset
-	// 	// break;
-	// 	switch( choice ) {
-	// 		case 1:
-	// 			// puts( "You chose setup_reservation" );
-	// 			setup_reservation();
-	// 			break;
-	// 		case 2:
-	// 			// puts( "You chose day_search" );
-	// 			day_search();
-	// 			break;
-	// 		case 3:
-	// 			// puts( "You chose room_search" );
-	// 			room_search();
-	// 			break;
-	// 		case 4:
-	// 			// puts( "You chose desc_search" );
-	// 			desc_search();
-	// 			break;
-	// 	}
-	// 	main_menu();
-	// }
-
-	// // setup_reservation();
-	// // day_search();
-	// // room_search();
-	// // desc_search();
+	// setup_reservation();
+	// day_search();
+	// room_search();
+	// desc_search();
 
 
 
 
 
-	// puts("\n\n");
-	// puts( "Printing all reservations" );
-	// for( int i = 0; i < resVect_count( &resList ); i++ )
-	// {
-	// 	res_print_reservation( resVect_get( &resList, i ) );
-	// }
-	// puts( "Done printing all reservations" );
-	// puts("\n\n");
+	puts("\n\n");
+	puts( "Printing all reservations" );
+	for( int i = 0; i < resVect_count( &resList ); i++ )
+	{
+		res_print_reservation( resVect_get( &resList, i ) );
+	}
+	puts( "Done printing all reservations" );
+	puts("\n\n");
 
-	// int c;
-	// puts( "Would you like to save (Y/N)?" );
-	// while( c = getchar() )
-	// {
-	// 	clear_input_buffer();
-	// 	if( c == 'y' || c == 'Y' )
-	// 	{
-	// 		if( fileChanges )
-	// 		{
-	// 			resVect_write_file( &resList, reservationfilename );
-	// 			puts( "Reservations saved!" );
-	// 		}
-	// 		break;
-	// 	} else if( c == 'n' || c == 'N' ) {
-	// 		break;
-	// 	}
-	// 	puts( "Please enter Y or N to save." );
-	// }
+	int c;
+	puts( "Would you like to save (Y/N)?" );
+	while( c = getchar() )
+	{
+		clear_input_buffer();
+		if( c == 'y' || c == 'Y' )
+		{
+			if( fileChanges )
+			{
+				resVect_write_file( &resList, reservationfilename );
+				puts( "Reservations saved!" );
+			}
+			break;
+		} else if( c == 'n' || c == 'N' ) {
+			break;
+		}
+		puts( "Please enter Y or N to save." );
+	}
 
 	return 0;
 }

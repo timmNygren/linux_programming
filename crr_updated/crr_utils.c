@@ -3,49 +3,22 @@
 #include <time.h>
 #include <string.h>
 
-#include <ncurses.h>
-
-#include "charcell-utils.h"
 #include "reservation.h"
 #include "search_sort_utils.h"
 #include "crr_utils.h"
 
-const char* MAIN_MENU[] = { "What would you like to do today?", "1. Create a reservation at a particular time.", \
-			 "2. Search all the rooms for one day.", "3. Search for one room over all days.", \
-			 "4. Search the reservations description for a particular reservation.", \
-			 "Quit." };
+const char* MAIN_MENU[] = { "What would you like to do today?\n", "1. Create a reservation at a particular time.\n", \
+			 "2. Search all the rooms for one day.\n", "3. Search for one room over all days.\n", \
+			 "4. Search the reservations description for a particular reservation.\n", \
+			 "Press enter to quit.\n" };
 
-// void main_menu( void )
-// {
-// 	for( int i = 0; i < sizeof(MAIN_MENU)/sizeof(char*); i++ )
-// 	{
-// 		fputs( MAIN_MENU[i], stdout );
-// 	}	
-// 	fflush( stdout );
-// }
-
-void main_menu( WINDOW *menu_win, int highlight )
+void main_menu( void )
 {
-	int x, y, i;	
-
-	x = 2;
-	y = 2;
-	clear_line( menu_win, 1 );
-	mvwprintw(menu_win, 1, 2, "Welcome to Console Room Reservation! Use arrow keys to go up and down, Press enter to select a choice" );
-	for(i = 0; i < sizeof(MAIN_MENU)/sizeof(char*); i++)
+	for( int i = 0; i < sizeof(MAIN_MENU)/sizeof(char*); i++ )
 	{
-		clear_line(menu_win, y);	
-		if( highlight == i ) /* High light the present choice */
-		{	
-			wattron(menu_win, A_REVERSE); 
-			mvwprintw(menu_win, y, x, "%s", MAIN_MENU[i]);
-			wattroff(menu_win, A_REVERSE);
-		}
-		else
-			mvwprintw(menu_win, y, x, "%s", MAIN_MENU[i]);
-		++y;
-	}
-	wrefresh(menu_win);
+		fputs( MAIN_MENU[i], stdout );
+	}	
+	fflush( stdout );
 }
 
 void print_format_list( void )
