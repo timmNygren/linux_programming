@@ -622,14 +622,14 @@ void init( int argc, char* argv[] )
 	resVect_check_consistency( &resList, rooms, numRooms );
 
 	// init ncurses interface
-	// initscr();
-	// noecho();
-	// cbreak();
-	// keypad(stdscr,TRUE);		// For arrows and enter/backspace for menu navigation and input
-	// curs_set(FALSE);
+	initscr();
+	noecho();
+	cbreak();
+	keypad(stdscr,TRUE);		// For arrows and enter/backspace for menu navigation and input
+	curs_set(FALSE);
 
-	// install_handler( SIGHUP );
-	// install_handler( SIGUSR1 );
+	install_handler( SIGHUP );
+	install_handler( SIGUSR1 );
 }
 
 void clear_input_buffer( void )
