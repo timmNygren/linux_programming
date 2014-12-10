@@ -761,7 +761,7 @@ int main( int argc, char* argv[] )
 				switch (ch) {
 					case KEY_RESIZE:
 						dispheight = size_display( display, edit );
-						d = 0;
+						// d = 0;
 						// strncpy( buf, "KEY_RESIZE", BUFLEN );
 						// mvwprintw( display, d++ + 2, 2, buf );
 						// d = d % dispheight;
