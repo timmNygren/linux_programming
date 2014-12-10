@@ -455,19 +455,21 @@ void room_search( void )
 	size_t* roomlookups = NULL;
 	char** roomCheck = NULL;
 
-	puts( "Enter a room to check reservations over all days. Press enter to go back." );
+	puts( "\nEnter a room to check reservations over all days. Press enter to go back." );
 	print_rooms( rooms, numRooms, 0 );
-	while( fgets( buff, ROOM_NAME_LEN, stdin ) && buff[0] != '\n' )
+	while( fgets( buff, ROOM_NAME_LEN, stdin ) )
 	{
+		if( buff[0] == '\n' )
+			return;
 		buff[strlen(buff)-1] = '\0';
 		roomCheck = bsearch( buff, rooms, numRooms, sizeof(char*), bsearch_room_cmp );
 		if( roomCheck )
 		{
 			break;
 		}
-		puts( "Invalid room." );
-		puts( "Enter a room to check reservations over all days. Press enter to go back." );
+		puts( "\nInvalid room. Listing room names." );
 		print_rooms( rooms, numRooms, 0 );
+		puts( "\nEnter a room to check reservations over all days. Press enter to go back." );
 	}
 	printf( "Room chosen was %s\n", rooms[roomCheck - rooms] );
 	key = calloc( ROOM_NAME_LEN, sizeof(char) );

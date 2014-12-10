@@ -188,8 +188,8 @@ reservation* crr_update_reservation( char* roomname, resVect* v, int res_pos )
 	}
 	desc = get_desc();
 	reservation res = create_reservation( roomname, startTime, endTime, desc );
-	qsort( v->data, v->count, sizeof(reservation), sort_time_name );
-	check = bsearch( &res, v->data, v->count, sizeof(reservation), bsearch_conflict );	// magically working now. . .
+	qsort( v->data, v->count, sizeof(reservation), sort_name_time );
+	check = bsearch( &res, v->data, v->count, sizeof(reservation), bsearch_conflict );
 	// res_print_reservation( &res );
 	// if( check )
 	// 	res_print_reservation( check );
