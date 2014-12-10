@@ -292,7 +292,7 @@ void setup_reservation( void )
 			int err = sscanf(buff, "%d", &room);
 			if( err != 1 || room < 1 || room > res_lookup_size )
 			{
-				puts( "Invalid room id.\n" );
+				puts( "\nInvalid room id.\n" );
 				printf( "The following rooms are available on %s.\n", searchbuff );
 				// crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
 				if( roomlookups )

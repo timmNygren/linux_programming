@@ -155,7 +155,7 @@ reservation new_reservation( char* roomname )
 
 		if ( startTime > endTime )
 		{
-			puts( "The ending time must come after the starting time" );
+			puts( "\nThe ending time must come after the starting time." );
 			continue;
 		}
 		
@@ -182,7 +182,7 @@ reservation* crr_update_reservation( char* roomname, resVect* v, int res_pos )
 		endTime = get_end_time();
 		if( startTime > endTime )
 		{
-			puts( "The ending time must come after the starting time." );
+			puts( "\nThe ending time must come after the starting time." );
 			continue;
 		}
 	}
