@@ -245,9 +245,9 @@ void setup_reservation( void )
 		result = getdate_r( buff, &brokendate );
 		if( result == 7 || result == 8 )
 		{
-			puts( "Invalid date. The following list contains valid inputs." );
+			puts( "\nInvalid date. The following list contains valid inputs." );
 			print_format_list();
-			puts( "\nEnter a date and time to check or press enter to go back." );
+			puts( "Enter a date and time to check or press enter to go back." );
 			continue;
 		} else if( result != 0 ) {
 			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/\n", __FUNCTION__, __LINE__, buff, result ); 
@@ -260,7 +260,7 @@ void setup_reservation( void )
 
 		size_t* roomlookups = resVect_select_room_at_time( &resList, timekey, rooms, numRooms );
 
-		printf( "The following rooms are available on %s.\n", buff );
+		printf( "\nThe following rooms are available on %s.\n", buff );
 		strncpy( searchbuff, buff, 64 );
 		if( roomlookups )
 		{
@@ -273,27 +273,27 @@ void setup_reservation( void )
 		int room;
 		while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
 		{
-			if( strlen(buff) > 2 )
-			{
-				puts( "\nNot a valid input\n" );
-				printf( "The following rooms are available on %s.\n", buff );
-				// strncpy( searchbuff, buff, 64 );
-				if( roomlookups )
-				{
-					crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
-				} else {
-					print_rooms( rooms, numRooms, 1 );
-					// res_lookup_size = numRooms;
-				}
-				puts( "Press enter to go back." );
-				continue;
-			}
+			// if( strlen(buff) > 2 )
+			// {
+			// 	puts( "\nNot a valid input\n" );
+			// 	printf( "The following rooms are available on %s.\n", buff );
+			// 	// strncpy( searchbuff, buff, 64 );
+			// 	if( roomlookups )
+			// 	{
+			// 		crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
+			// 	} else {
+			// 		print_rooms( rooms, numRooms, 1 );
+			// 		// res_lookup_size = numRooms;
+			// 	}
+			// 	puts( "Press enter to go back." );
+			// 	continue;
+			// }
 
 			int err = sscanf(buff, "%d", &room);
 			if( err != 1 || room < 1 || room > res_lookup_size )
 			{
 				puts( "Invalid room id.\n" );
-				puts( "The following rooms are available" );
+				printf( "The following rooms are available on %s.\n", searchbuff );
 				// crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
 				if( roomlookups )
 				{
