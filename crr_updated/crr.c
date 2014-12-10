@@ -332,7 +332,7 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 	{
 		int choice = 0;
 
-		puts("\nHere are the rooms reserved on the specified day.");
+		puts("\nHere are the reserved rooms.");
 		crr_print_reservations( &resList, roomlookups, res_lookup_size );
 		puts( "\nPick a reservation. Press enter to go back." );
 		while( fgets( buff, BUFFLEN, stdin ) )
@@ -342,7 +342,7 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 			int err = sscanf( buff, "%d", &choice );
 			if( err != 1 || choice < 1 || choice > res_lookup_size )
 			{
-				puts( "\nInvalid choice.\n" );
+				puts( "\nInvalid choice. Here are the reserved rooms.\n" );
 				crr_print_reservations( &resList, roomlookups, res_lookup_size );
 				puts( "\nPick a reservation. Press enter to go back." );
 				continue;
@@ -455,8 +455,9 @@ void room_search( void )
 	size_t* roomlookups = NULL;
 	char** roomCheck = NULL;
 
-	puts( "\nEnter a room to check reservations over all days. Press enter to go back." );
+	puts( "\nHere is a list of valid room names.")
 	print_rooms( rooms, numRooms, 0 );
+	puts( "\nEnter a room to check reservations over all days. Press enter to go back." );
 	while( fgets( buff, ROOM_NAME_LEN, stdin ) )
 	{
 		if( buff[0] == '\n' )
@@ -467,7 +468,7 @@ void room_search( void )
 		{
 			break;
 		}
-		puts( "\nInvalid room. Listing room names." );
+		puts( "\nInvalid room. Listing valid room names." );
 		print_rooms( rooms, numRooms, 0 );
 		puts( "\nEnter a room to check reservations over all days. Press enter to go back." );
 	}
