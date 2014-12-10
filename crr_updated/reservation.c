@@ -336,7 +336,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 	if( res ) {
 		// puts( "Found a room on a day." );
 		// printf( "reservation is at index %li\n", res - v->data );
-		res_print_reservation( res );
+		// res_print_reservation( res );
 		res_on_day = calloc( day_size, sizeof(size_t) );
 		if( !res_on_day )
 		{
