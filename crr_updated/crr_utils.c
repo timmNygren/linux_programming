@@ -130,7 +130,7 @@ time_t get_end_time( void )
 char* get_desc( void )
 {
 	char* buf = calloc( DESC_SIZE, sizeof(char) );
-	puts( "Enter a short description (Limit 128 characters):" );
+	puts( "\nEnter a short description (Limit 128 characters):" );
 	fflush( stdout );
 	fgets( buf, DESC_SIZE, stdin );
 	buf[strlen(buf) - 1] = '\0';

@@ -303,12 +303,16 @@ void setup_reservation( void )
 				puts( "There was a conflicting reservation:" );
 				res_print_reservation( conflict );
 				printf( "The following rooms are available on %s.\n", searchbuff );
-				crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
+				if( roomlookups )
+					crr_print_menu( rooms, roomlookups, res_lookup_size, 1 );
+				else
+					print_rooms( rooms, numRooms, 1 );
+
 				puts( "Press enter to go back." );
 				continue;
 			} else {
 				fileChanges = 1;
-				puts( "Your reservation has been added!" );
+				puts( "\nYour reservation has been added!\n" );
 				break;
 			}
 		}
