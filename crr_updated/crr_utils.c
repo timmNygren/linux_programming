@@ -5,14 +5,15 @@
 
 #include <ncurses.h>
 
+#include "charcell-utils.h"
 #include "reservation.h"
 #include "search_sort_utils.h"
 #include "crr_utils.h"
 
-const char* MAIN_MENU[] = { "What would you like to do today?\n", "1. Create a reservation at a particular time.\n", \
-			 "2. Search all the rooms for one day.\n", "3. Search for one room over all days.\n", \
-			 "4. Search the reservations description for a particular reservation.\n", \
-			 "Quit.\n" };
+const char* MAIN_MENU[] = { "What would you like to do today?", "1. Create a reservation at a particular time.", \
+			 "2. Search all the rooms for one day.", "3. Search for one room over all days.", \
+			 "4. Search the reservations description for a particular reservation.", \
+			 "Quit." };
 
 // void main_menu( void )
 // {
