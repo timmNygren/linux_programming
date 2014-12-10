@@ -349,14 +349,15 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 		size_t lefti = res_index - 1;
 		while( lefti >= 0 )
 		{
+			if( (res_index - 1) < 0 )
+				break;
+
 			res_t = v->data[lefti].starttime;
 			res_t = to_local( res_t );
 			localtime_r( &res_t, &res_tm );
 
 			if( res_tm.tm_wday != day_key_tm.tm_wday )
-			{
 				break;
-			}
 
 			if( day_count == day_size )
 			{
@@ -371,8 +372,11 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 			}
 
 			printf( "ADDING INDEX GOING LEFT %li\n", lefti );
-			res_on_day[day_count++] = lefti;		
-			lefti--;
+			res_on_day[day_count++] = lefti;
+			if( lefti == 0 )
+				break;
+			else		
+				lefti--;
 		}
 
 		// Go right
@@ -384,9 +388,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 			localtime_r( &res_t, &res_tm );
 
 			if( res_tm.tm_wday != day_key_tm.tm_wday )
-			{
 				break;
-			}
 
 			if( day_count == day_size )
 			{
@@ -461,7 +463,9 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 		size_t lefti = resIndex - 1;
 		while( lefti >= 0 )
 		{
-			
+			if( (resIndex - 1) < 0 )
+				break;
+
 			if( strcasecmp( key, v->data[lefti].roomname ) != 0 || timeNow >= v->data[lefti].endtime )
 			{
 				break;
@@ -478,8 +482,11 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 				}
 			}
 
-			resRooms[resCount++] = lefti;		
-			lefti--;
+			resRooms[resCount++] = lefti;	
+			if( lefti == 0)
+				break;
+			else	
+				lefti--;
 		}
 
 		// Go right
