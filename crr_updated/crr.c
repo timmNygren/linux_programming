@@ -337,7 +337,7 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 		puts( "\nPick a reservation. Press enter to go back." );
 		while( fgets( buff, BUFFLEN, stdin ) )
 		{
-			if( buff[0] != '\n' )
+			if( buff[0] == '\n' )
 				return;
 			int err = sscanf( buff, "%d", &choice );
 			if( err != 1 || choice < 1 || choice > res_lookup_size )
@@ -350,14 +350,14 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 			break;
 		}
 		choice--;
-		printf( "Your choice was %d\n", choice );
+		// printf( "Your choice was %d\n", choice );
 		int update;
 		puts( "\nWould you like to update or delete? Press enter to go back." );
 		puts( "1. Update\n2. Delete" );
 
 		while( fgets( buff, BUFFLEN, stdin ) )
 		{
-			if( buff[0] != '\n' )
+			if( buff[0] == '\n' )
 				return;			
 			int err = sscanf( buff, "%d", &update );
 			if( err != 1 || update < 1 || update > 2 )
