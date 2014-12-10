@@ -334,8 +334,8 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 
 	size_t res_index;
 	if( res ) {
-		puts( "Found a room on a day." );
-		printf( "reservation is at index %li\n", res - v->data );
+		// puts( "Found a room on a day." );
+		// printf( "reservation is at index %li\n", res - v->data );
 		res_print_reservation( res );
 		res_on_day = calloc( day_size, sizeof(size_t) );
 		if( !res_on_day )
@@ -359,10 +359,10 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 			res_t = v->data[lefti].starttime;
 			res_t = to_local( res_t );
 			localtime_r( &res_t, &res_tm );
-			printf( "LEFT: Key's day: %d, current reservation day: %d\n", day_key_tm.tm_wday, res_tm.tm_wday );
+			// printf( "LEFT: Key's day: %d, current reservation day: %d\n", day_key_tm.tm_wday, res_tm.tm_wday );
 			if( res_tm.tm_wday != day_key_tm.tm_wday )
 			{
-				puts( "LEFT: DAYS NOT EQUAL" );
+				// puts( "LEFT: DAYS NOT EQUAL" );
 				break;
 			}
 			if( day_count == day_size )
@@ -376,7 +376,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 					exit(1);	
 				}
 			}
-			printf( "ADDING INDEX %li\n", lefti );
+			// printf( "ADDING INDEX %li\n", lefti );
 			res_on_day[day_count++] = lefti;		
 			lefti--;
 		}
@@ -388,10 +388,10 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 			res_t = v->data[righti].starttime;
 			res_t = to_local( res_t );
 			localtime_r( &res_t, &res_tm );
-			printf( "RIGHT: Key's day: %d, current reservation day: %d\n", day_key_tm.tm_wday, res_tm.tm_wday );
+			// printf( "RIGHT: Key's day: %d, current reservation day: %d\n", day_key_tm.tm_wday, res_tm.tm_wday );
 			if( res_tm.tm_wday != day_key_tm.tm_wday )
 			{
-				puts( "RIGHT: DAYS NOT EQUAL" );
+				// puts( "RIGHT: DAYS NOT EQUAL" );
 				break;
 			}
 			if( day_count == day_size )
@@ -405,7 +405,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 					exit(1);	
 				}
 			}
-			printf( "ADDING INDEX %li\n", righti );
+			// printf( "ADDING INDEX %li\n", righti );
 			res_on_day[day_count++] = righti;
 
 			righti++;
@@ -414,10 +414,10 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 		qsort( res_on_day, day_count, sizeof(size_t), sort_int );
 
 	}
-	if( res_on_day )
-		puts( "RES_ON_DAY has rooms" );
-	else
-		puts( "RES_ON_DAY is NULL" );
+	// if( res_on_day )
+	// 	puts( "RES_ON_DAY has rooms" );
+	// else
+	// 	puts( "RES_ON_DAY is NULL" );
 	res_lookup_size = day_count;
 	return res_on_day;
 }
@@ -475,7 +475,7 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 			
 			if( strcasecmp( key, v->data[lefti].roomname ) != 0 || timeNow >= v->data[lefti].endtime )
 			{
-				puts( "LEFT: DAYS NOT EQUAL" );
+				// puts( "LEFT: DAYS NOT EQUAL" );
 				break;
 			}
 			if( resCount == resSize )
@@ -489,7 +489,7 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 					exit(1);	
 				}
 			}
-			printf( "ADDING INDEX %li\n", lefti );
+			// printf( "ADDING INDEX %li\n", lefti );
 			resRooms[resCount++] = lefti;		
 			lefti--;
 		}
@@ -500,7 +500,7 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 		{
 			if( strcasecmp( key, v->data[righti].roomname ) != 0 )
 			{
-				puts( "RIGHT: DAYS NOT EQUAL" );
+				// puts( "RIGHT: DAYS NOT EQUAL" );
 				break;
 			}
 			if( resCount == resSize )
@@ -514,7 +514,7 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 					exit(1);	
 				}
 			}
-			printf( "ADDING INDEX %li\n", righti );
+			// printf( "ADDING INDEX %li\n", righti );
 			resRooms[resCount++] = righti;
 
 			righti++;
@@ -522,10 +522,10 @@ size_t* resVect_select_res_room( resVect* v, char* key )
 
 		qsort( resRooms, resCount, sizeof(size_t), sort_int );
 	}
-	if( resRooms )
-		puts( "RESROOMS has rooms" );
-	else
-		puts( "RESROOMS is NULL" );
+	// if( resRooms )
+	// 	puts( "RESROOMS has rooms" );
+	// else
+	// 	puts( "RESROOMS is NULL" );
 	res_lookup_size = resCount;
 
 	return resRooms;
