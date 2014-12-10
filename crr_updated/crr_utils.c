@@ -14,14 +14,14 @@ const char* MAIN_MENU[] = { "What would you like to do today?\n", "1. Create a r
 			 "4. Search the reservations description for a particular reservation.\n", \
 			 "Quit.\n" };
 
-void main_menu( void )
-{
-	for( int i = 0; i < sizeof(MAIN_MENU)/sizeof(char*); i++ )
-	{
-		fputs( MAIN_MENU[i], stdout );
-	}	
-	fflush( stdout );
-}
+// void main_menu( void )
+// {
+// 	for( int i = 0; i < sizeof(MAIN_MENU)/sizeof(char*); i++ )
+// 	{
+// 		fputs( MAIN_MENU[i], stdout );
+// 	}	
+// 	fflush( stdout );
+// }
 
 void main_menu( WINDOW *menu_win, int highlight )
 {

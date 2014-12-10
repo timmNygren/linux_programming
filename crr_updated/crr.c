@@ -658,7 +658,7 @@ int main( int argc, char* argv[] )
 		switch (ch) {
 			case KEY_RESIZE:
 				dispheight = size_display( display, edit );
-				d = 0;
+				// d = 0;
 				// strncpy( buf, "KEY_RESIZE", BUFLEN );
 				// mvwprintw( display, d++ + 2, 2, buf );
 				// d = d % dispheight;
@@ -681,7 +681,7 @@ int main( int argc, char* argv[] )
 					highlight = nChoices;
 				else
 					--highlight;
-				strncpy( buf, "KEY_UP", BUFLEN );
+				strncpy( buf, "KEY_UP", BUFFLEN );
 				mvwprintw( edit, 1, 2, buf );
 
 				wrefresh(edit);
@@ -694,7 +694,7 @@ int main( int argc, char* argv[] )
 					highlight = 1;
 				else 
 					++highlight;
-				strncpy( buf, "KEY_DOWN", BUFLEN );
+				strncpy( buf, "KEY_DOWN", BUFFLEN );
 				mvwprintw( edit, 1, 2, buf );
 
 				wrefresh(edit);
@@ -705,7 +705,7 @@ int main( int argc, char* argv[] )
 				// break;
 			case 10:
 				choice = highlight;
-				strncpy( buf, "KEY_ENTER", BUFLEN );
+				strncpy( buf, "KEY_ENTER", BUFFLEN );
 				mvwprintw( edit, 1, 2, buf );
 				wrefresh(edit);
 				break;
@@ -784,7 +784,7 @@ int main( int argc, char* argv[] )
 							highlight = nChoices;
 						else
 							--highlight;
-						strncpy( buf, "KEY_UP", BUFLEN );
+						strncpy( buf, "KEY_UP", BUFFLEN );
 						mvwprintw( edit, 1, 2, buf );
 
 						wrefresh(edit);
@@ -794,14 +794,14 @@ int main( int argc, char* argv[] )
 							highlight = 1;
 						else 
 							++highlight;
-						strncpy( buf, "KEY_DOWN", BUFLEN );
+						strncpy( buf, "KEY_DOWN", BUFFLEN );
 						mvwprintw( edit, 1, 2, buf );
 
 						wrefresh(edit);
 						break;
 					case 10:
 						choice = highlight;
-						strncpy( buf, "KEY_ENTER", BUFLEN );
+						strncpy( buf, "KEY_ENTER", BUFFLEN );
 						mvwprintw( edit, 1, 2, buf );
 
 						wrefresh(edit);

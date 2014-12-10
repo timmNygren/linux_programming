@@ -9,7 +9,7 @@
 extern const char* MAIN_MENU[];
 // extern const char* RESERVATION_MENU[];
 
-void main_menu( void );
+void main_menu( WINDOW *menu_win, int highlight );
 void print_format_list( void );
 void print_rooms( char** roomnames, int numRooms, int printNums );
 void crr_print_menu( char** menu, size_t* lookups, int lookups_size, int printNums );
