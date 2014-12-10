@@ -7,21 +7,20 @@
 #include "search_sort_utils.h"
 #include "crr_utils.h"
 
-const char* MAIN_MENU[] = { "What would you like to do today?\n", "1. Create a reservation at a particular time.\n", \
+const char* MAIN_MENU[] = { "What would you like to do today?\n", "1. Create a reservation at a particular time.\n", \	// REQ3c
 			 "2. Search all the rooms for one day.\n", "3. Search for one room over all days.\n", \
 			 "4. Search the reservations description for a particular reservation.\n", \
 			 "Press enter to quit.\n" };
 
-void main_menu( void )
+void main_menu( void )	// REQ3c
 {
 	for( int i = 0; i < sizeof(MAIN_MENU)/sizeof(char*); i++ )
 	{
 		fputs( MAIN_MENU[i], stdout );
 	}	
-	// fflush( stdout );
 }
 
-void print_format_list( void )
+void print_format_list( void )	// REQ3c
 {
 	fputs( "\nList of valid date entries:\n", stdout );
 	fputs( "Full weekday name (i.e. Tuesday)\n", stdout );
@@ -33,10 +32,9 @@ void print_format_list( void )
 	fputs( "YYYY/MM/DD at hour(AM/PM) (i.e 2014/11/10 at 06AM)\n", stdout );
 	fputs( "YYYY/MM/DD hour:minute(AM/PM) (i.e 2014/11/10 06:30AM)\n", stdout );
 	fputs( "YYYY/MM/DD at hour:minute(AM/PM) (i.e 2014/11/10 at 06:30AM)\n\n", stdout );
-	// fflush( stdout );
 }
 
-void crr_print_menu( char** menu, size_t* lookups, int lookups_size, int printNums )
+void crr_print_menu( char** menu, size_t* lookups, int lookups_size, int printNums )	// REQ3c
 {
 	for( int i = 0; i < lookups_size; i++)
 	{
@@ -45,10 +43,9 @@ void crr_print_menu( char** menu, size_t* lookups, int lookups_size, int printNu
 		else
 			printf( "%s\n", menu[lookups[i]] );
 	}
-	// fflush( stdout );
 }
 
-void print_rooms( char** roomnames, int numRooms, int printNums )
+void print_rooms( char** roomnames, int numRooms, int printNums )	// REQ3c
 {
 	int i = 0;
 	size_t view[numRooms];
@@ -58,16 +55,15 @@ void print_rooms( char** roomnames, int numRooms, int printNums )
 	crr_print_menu( roomnames, view, numRooms, printNums );
 }
 
-time_t get_start_time( void )
+time_t get_start_time( void )	// REQ3c
 {
 	char buf[BUFFLEN];
 	int err;
 	time_t currentTime = time( NULL );
 	time_t startTime;
 	struct tm tempTM;
-	
+
 	puts( "\nEnter a start date:" );
-	// fflush( stdout );
 	while( fgets( buf, BUFFLEN, stdin ) )
 	{
 		buf[strlen(buf) - 1] = '\0';
@@ -78,7 +74,7 @@ time_t get_start_time( void )
 			print_format_list();
 			puts( "\nEnter a start date:" );
 			continue;
-		} else if( err != 0 ) {
+		} else if( err != 0 ) {		// REQ6
 			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/. Please source datemsk.sh\n", __FUNCTION__, __LINE__, buf, err ); 
 			puts( "Error converting date. Exiting program." );
 			puts( "Press enter to quit. . ." );
@@ -90,7 +86,6 @@ time_t get_start_time( void )
 		{
 			puts( "\nYou can't make a reservation in the past!" );
 			puts( "Enter a start date:" );
-			// fflush( stdout );
 			continue;
 		}
 		break;
@@ -98,14 +93,13 @@ time_t get_start_time( void )
 	return startTime;
 }
 
-time_t get_end_time( void )
+time_t get_end_time( void )		// REQ3c
 {
 	char buf[BUFFLEN];
 	int err;
 	time_t endTime;
 	struct tm tempTM;
 	puts( "\nEnter an end date:" );
-	// fflush( stdout );
 	while( fgets( buf, BUFFLEN, stdin ) )
 	{
 		buf[strlen(buf) - 1] = '\0';
@@ -117,7 +111,7 @@ time_t get_end_time( void )
 			puts( "\nEnter an end date:" );
 			// fflush( stdout );
 			continue;
-		} else if( err != 0 ) {
+		} else if( err != 0 ) {		// REQ6
 			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/. Please source datemsk.sh\n", __FUNCTION__, __LINE__, buf, err ); 
 			puts( "Error converting date. Exiting program." );
 			puts( "Press enter to quit. . ." );
@@ -130,11 +124,10 @@ time_t get_end_time( void )
 	return endTime;
 }
 
-char* get_desc( void )
+char* get_desc( void )	// REQ3c
 {
-	char* buf = calloc( DESC_SIZE, sizeof(char) );
+	char* buf = calloc( DESC_SIZE, sizeof(char) );	// REQ4
 	puts( "\nEnter a short description (Limit 128 characters):" );
-	// fflush( stdout );
 	fgets( buf, DESC_SIZE, stdin );
 	buf[strlen(buf) - 1] = '\0';
 	return buf;
@@ -152,7 +145,7 @@ reservation new_reservation( char* roomname )
 		startTime = get_start_time();
 		endTime = get_end_time();
 
-		if ( startTime > endTime )
+		if ( startTime > endTime )	// REQ3c
 		{
 			puts( "\nThe ending time must come after the starting time." );
 			continue;
@@ -163,7 +156,7 @@ reservation new_reservation( char* roomname )
 	desc = get_desc();
 
 	reservation temp = create_reservation( roomname, startTime, endTime, desc );
-	free( desc );
+	free( desc );	// REQ4
 	return temp;
 }
 
@@ -181,26 +174,26 @@ reservation* crr_update_reservation( char* roomname, resVect* v, int res_pos )
 		endTime = get_end_time();
 		if( startTime > endTime )
 		{
-			puts( "\nThe ending time must come after the starting time." );
+			puts( "\nThe ending time must come after the starting time." );	// REQ3c
 			continue;
 		}
 	}
 	desc = get_desc();
 	reservation res = create_reservation( roomname, startTime, endTime, desc );
-	qsort( v->data, v->count, sizeof(reservation), sort_name_time );
-	check = bsearch( &res, v->data, v->count, sizeof(reservation), bsearch_conflict );
+	qsort( v->data, v->count, sizeof(reservation), sort_name_time );	// REQ5
+	check = bsearch( &res, v->data, v->count, sizeof(reservation), bsearch_conflict );	// REQ5, REQ7
 
-	if( check != NULL && check != resVect_get( v, res_pos ) )
+	if( check != NULL && check != resVect_get( v, res_pos ) )	// REQ7
 		return check;
 
 
 	reservation* updateres = resVect_get( v, res_pos );
 	update_reservation( updateres, roomname, startTime, endTime, desc );
-	free( desc );
+	free( desc );	// REQ4
 	return NULL;
 }
 
-void crr_print_reservations( resVect* v, size_t* lookups, int lookups_size )
+void crr_print_reservations( resVect* v, size_t* lookups, int lookups_size )	// REQ3c
 {
 	for( int i = 0; i < lookups_size; i++ )
 	{

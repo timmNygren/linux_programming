@@ -1,3 +1,13 @@
+/***
+ *	CRR application for linux programming
+ *
+ *	Author: Timm Nygren
+ *	
+ *	Resources:
+ *		http://linux.die.net/man/3/getdate_r		- info for getdate_r and error codes
+ *		https://gist.github.com/EmilHernvall/953968 - for a vector like data structure for reservations
+ *
+ */
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,15 +19,15 @@
 #include "crr_utils.h"
 #include "search_sort_utils.h"
 
-int fileChanges = 0;
+int fileChanges = 0;	// REQ10
 char* reservationfilename;
 char** rooms;
 int numRooms = 0;
 resVect resList;
 
-#define ERROR_CRR( fp, ...) crr_error( fp, __FUNCTION__, __LINE__, __VA_ARGS__ "" )
+#define ERROR_CRR( fp, ...) crr_error( fp, __FUNCTION__, __LINE__, __VA_ARGS__ "" )		// REQ6
 
-void crr_error( FILE* fp, const char* functionname, int lineno, const char* op )
+void crr_error( FILE* fp, const char* functionname, int lineno, const char* op )		// REQ6
 {
 	char errbuff[BUFFLEN];
 	char* errstr = strerror_r( errno, errbuff, BUFFLEN );
@@ -36,7 +46,7 @@ int compare_string( const void* left, const void* right )
 	return strcmp( mleft, mright );
 }
 
-void cleanup( void )
+void cleanup( void )	// REQ4, I feel this is for the dynamic allocation requirement since you must free what you allocate
 {
 	if( rooms )
 	{
@@ -57,10 +67,10 @@ void cleanup( void )
 	}
 }
 
-void setup_rooms( char* roomfilename )
+void setup_rooms( char* roomfilename )	// REQ3a, REQ3b
 {
 	FILE* roomsfile;
-	if( (roomsfile = fopen( roomfilename, "r" )) == NULL )
+	if( (roomsfile = fopen( roomfilename, "r" )) == NULL )	// REQ3a, REQ6
 	{
 		ERROR_CRR( stderr, "open file rooms.dat" );
 		puts( "Missing rooms.dat file. Please make sure you have a file with this exact name. Exiting the program." );
@@ -77,7 +87,7 @@ void setup_rooms( char* roomfilename )
 		}
 	}
 
-	if( numRooms == 0 )
+	if( numRooms == 0 )		// REQ6
 	{
 		ERROR_CRR( stderr, "No rooms in file" );
 		puts( "There are no rooms available. Exiting the program." );
@@ -86,7 +96,7 @@ void setup_rooms( char* roomfilename )
 
 	rewind( roomsfile );
 
-	rooms = calloc( numRooms, sizeof(char*) );
+	rooms = calloc( numRooms, sizeof(char*) );		// REQ4
 	if( !rooms )
 	{
 		ERROR_CRR( stderr, "allocating memory for rooms" );
@@ -100,7 +110,7 @@ void setup_rooms( char* roomfilename )
 		buf[strlen(buf) - 1] = '\0';
 		if( strcmp( buf, "" ) != 0 && i < numRooms)
 		{
-			rooms[i] = calloc( ROOM_NAME_LEN, sizeof(char) );
+			rooms[i] = calloc( ROOM_NAME_LEN, sizeof(char) );	// REQ4
 			if( !rooms[i] )
 			{
 				ERROR_CRR( stderr, "allocating memory for rooms" );
@@ -113,11 +123,11 @@ void setup_rooms( char* roomfilename )
 	}
 	fclose( roomsfile );
 
-	qsort( rooms, numRooms, sizeof(char*), compare_string );
+	qsort( rooms, numRooms, sizeof(char*), compare_string );	// REQ5
 }
 
 // Option 1
-void setup_reservation( void )
+void setup_reservation( void )	// REQ3c
 {
 	char buff[BUFFLEN];
 	char searchbuff[64];
@@ -136,7 +146,7 @@ void setup_reservation( void )
 			print_format_list();
 			puts( "Enter a date and time to check or press enter to go back." );
 			continue;
-		} else if( result != 0 ) {
+		} else if( result != 0 ) {	// REQ6
 			fprintf( stderr, "%s:%d: Error processing %s, with error code /%d/. Please source datemsk.sh\n", __FUNCTION__, __LINE__, buff, result ); 
 			puts( "Error converting date. Exiting program." );
 			puts( "Press enter to quit. . ." );
@@ -184,8 +194,8 @@ void setup_reservation( void )
 				roomname = rooms[room];
 
 			reservation res = new_reservation( roomname );
-			reservation* conflict = resVect_add( &resList, res );
-			if( conflict )
+			reservation* conflict = resVect_add( &resList, res );	// REQ7
+			if( conflict )	// REQ7
 			{
 				puts( "\nThere was a conflicting reservation:" );
 				res_print_reservation( conflict );
@@ -198,21 +208,21 @@ void setup_reservation( void )
 				puts( "Press enter to go back." );
 				continue;
 			} else {
-				fileChanges = 1;
+				fileChanges = 1;	// REQ10
 				puts( "\nYour reservation has been added!\n" );
 				break;
 			}
 		}
 
 		if( roomlookups )
-			free( roomlookups );
+			free( roomlookups );	// REQ4
 		break;
 	}
 }
 
 #define SELECT( function ) function( &resList, key )
 // Used in options 2, 3, and 4
-void review_update_or_delete( size_t* roomlookups )
+void review_update_or_delete( size_t* roomlookups )		// REQ3c
 {
 	char buff[BUFFLEN];
 	if( roomlookups ) 
@@ -277,19 +287,19 @@ void review_update_or_delete( size_t* roomlookups )
 				break;
 			}
 
-			reservation* conflict = crr_update_reservation( rooms[room], &resList, roomlookups[choice] );
+			reservation* conflict = crr_update_reservation( rooms[room], &resList, roomlookups[choice] );	// REQ7
 
-			if( conflict )
+			if( conflict )	// REQ7
 			{
 				puts( "\nThere was a conflicting reservation:" );
 				res_print_reservation( conflict );
 			} else {
-				fileChanges = 1;
+				fileChanges = 1;	// REQ10
 				puts( "\nYour reservation has been updated!\n" );
 			}
 		} else {
 			resVect_delete( &resList, roomlookups[choice] );
-			fileChanges = 1;
+			fileChanges = 1;	// REQ10
 			puts( "\nThe reservation was deleted.\n" );
 		} // update == 1
 	} else	// roomlookups
@@ -297,7 +307,7 @@ void review_update_or_delete( size_t* roomlookups )
 }
 
 // Option 2
-void day_search( void )
+void day_search( void )		// REQ3c
 {
 	char buff[BUFFLEN];
 	size_t* roomlookups = NULL;
@@ -330,11 +340,11 @@ void day_search( void )
 
 	review_update_or_delete( roomlookups );
 	if( roomlookups )
-		free( roomlookups );
+		free( roomlookups );	// REQ4
 }
 
 // Option 3
-void room_search( void )
+void room_search( void )		// REQ3c
 {
 	char buff[ROOM_NAME_LEN];
 	char* key = NULL;
@@ -349,7 +359,7 @@ void room_search( void )
 		if( buff[0] == '\n' )
 			return;
 		buff[strlen(buff)-1] = '\0';
-		roomCheck = bsearch( buff, rooms, numRooms, sizeof(char*), bsearch_room_cmp );
+		roomCheck = bsearch( buff, rooms, numRooms, sizeof(char*), bsearch_room_cmp );	// REQ5
 		if( roomCheck )
 		{
 			break;
@@ -359,7 +369,7 @@ void room_search( void )
 		puts( "\nEnter a room to check reservations over all days. Press enter to go back." );
 	}
 
-	key = calloc( ROOM_NAME_LEN, sizeof(char) );
+	key = calloc( ROOM_NAME_LEN, sizeof(char) );	// REQ4
 	if( !key )
 	{
 		fputs( "Could not allocate memory for key in room search.", stderr );
@@ -372,14 +382,14 @@ void room_search( void )
 
 	review_update_or_delete( roomlookups );
 
-	if( key )
+	if( key )	// REQ4
 		free( key );
 	if( roomlookups )
 		free( roomlookups );
 }
 
 // Option 4
-void desc_search( void )
+void desc_search( void )	// REQ3c
 {
 	char buff[DESC_SIZE];
 	char* key = NULL;
@@ -394,7 +404,7 @@ void desc_search( void )
 
 	buff[strlen(buff)-1] = '\0';
 		
-	key = calloc( DESC_SIZE, sizeof(char) );
+	key = calloc( DESC_SIZE, sizeof(char) );	// REQ4
 	if( !key )
 	{
 		fputs( "Could not allocate memory for key in description search.", stderr );
@@ -407,7 +417,7 @@ void desc_search( void )
 
 	review_update_or_delete( roomlookups );
 
-	if( key )
+	if( key )	// REQ4
 		free( key );
 	if( roomlookups )
 		free( roomlookups );
@@ -415,23 +425,23 @@ void desc_search( void )
 
 void init( int argc, char* argv[] )
 {
-	if( argc < 2 || argc > 3 )
+	if( argc < 2 || argc > 3 )	// REQ3a, REQ3b
 	{
 		puts( "Usage: ./crr rooms.dat [schedule.dat]" );
 		puts( "You must provide a file called 'rooms.dat' and must not be empty." );
 		puts( "The file 'schedule.dat' is optional. If nothing is provided, schedule.dat will be used for the file name." );
 		exit(1);
 	} else if ( argc == 2 ) {
-		reservationfilename = "schedule.dat";
+		reservationfilename = "schedule.dat";	// REQ3b
 	} else {
-		reservationfilename = argv[2];
+		reservationfilename = argv[2];			// REQ3b
 	}
 	atexit( cleanup );
-	setup_rooms( argv[1] );
+	setup_rooms( argv[1] );		// REQ3a
 	resVect_init( &resList );
 
-	resVect_read_file( &resList, reservationfilename );
-	resVect_check_consistency( &resList, rooms, numRooms );
+	resVect_read_file( &resList, reservationfilename );			// REQ3b
+	resVect_check_consistency( &resList, rooms, numRooms );		// REQ8
 
 }
 
@@ -448,7 +458,7 @@ int main( int argc, char* argv[] )
 {
 	init( argc, argv );
 
-	puts( "Welcome to Console Room Reservation!\n" );
+	puts( "Welcome to Console Room Reservation!\n" );	// REQ3c
 	main_menu();
 
 	char buff[BUFFLEN];
@@ -456,7 +466,7 @@ int main( int argc, char* argv[] )
 	while( fgets( buff, BUFFLEN, stdin ) && buff[0] != '\n' )
 	{
 		int err = sscanf(buff, "%d", &choice);
-		if( err != 1 || choice < 1 || choice > 4 )
+		if( err != 1 || choice < 1 || choice > 4 )		// REQ6
 		{
 			puts( "\nInvalid choice.\n" );
 			main_menu();
@@ -480,14 +490,14 @@ int main( int argc, char* argv[] )
 	}
 
 	int c;
-	puts( "Would you like to save (Y/N)?" );
+	puts( "Would you like to save (Y/N)?" );	// REQ10
 	while( c = getchar() )
 	{
 		clear_input_buffer();
 		if( c == 'y' || c == 'Y' )
 		{
 			puts( "\nReservations saved!\n" );
-			if( fileChanges )
+			if( fileChanges )		// REQ10
 			{
 				resVect_write_file( &resList, reservationfilename );
 			}

@@ -6,7 +6,7 @@
 #include "reservation.h"
 #include "search_sort_utils.h"
 
-int sort_name_time( const void* left, const void* right )
+int sort_name_time( const void* left, const void* right )	// REQ5
 {
 	const reservation *mleft = (const reservation*)left;
 	const reservation *mright = (const reservation*)right;
@@ -26,7 +26,7 @@ int sort_name_time( const void* left, const void* right )
 	return 0;
 }
 
-int sort_time_name( const void* left, const void* right )
+int sort_time_name( const void* left, const void* right )	// REQ5
 {
 	const reservation *mleft = (const reservation*)left;
 	const reservation *mright = (const reservation*)right;
@@ -40,14 +40,14 @@ int sort_time_name( const void* left, const void* right )
 	}
 }
 
-int sort_int( const void* left, const void* right )
+int sort_int( const void* left, const void* right )		// REQ5
 {
 	const int mleft = *(const int*)left;
 	const int mright = *(const int*)right;
 	return mleft - mright;
 }
 
-int sort_size_t( const void* left, const void* right )
+int sort_size_t( const void* left, const void* right )		// REQ5
 {
 	const size_t mleft = *(const size_t*)left;
 	const size_t mright = *(const size_t*)right;
@@ -58,7 +58,7 @@ int sort_size_t( const void* left, const void* right )
 	return 0;
 }
 
-int bsearch_room_cmp( const void* key, const void* element )
+int bsearch_room_cmp( const void* key, const void* element )	// REQ5
 {
 	const char* k = (const char*)key;
 	const char* ele= *(const char**)element;
@@ -66,7 +66,7 @@ int bsearch_room_cmp( const void* key, const void* element )
 	return strcasecmp( k, ele );
 }
 
-int bsearch_res_room_cmp( const void* key, const void* element )
+int bsearch_res_room_cmp( const void* key, const void* element )	// REQ5
 {
 	const char* k = (const char*)key;
 	const reservation* res = (const reservation*)element;
@@ -74,7 +74,7 @@ int bsearch_res_room_cmp( const void* key, const void* element )
 	return strcasecmp( k, res->roomname );
 }
 
-int bsearch_time_cmp( const void* key, const void* element )
+int bsearch_time_cmp( const void* key, const void* element )	// REQ5
 {
 	const time_t* k = (const time_t*)key;
 	const reservation* res = (const reservation*)element;
@@ -92,7 +92,7 @@ int bsearch_time_cmp( const void* key, const void* element )
 	}
 }
 
-int bsearch_day_cmp( const void* key, const void* element )
+int bsearch_day_cmp( const void* key, const void* element )		// REQ5
 {
 	const time_t* k = (const time_t*)key;
 	const reservation* res = (const reservation*)element;
@@ -112,7 +112,7 @@ int bsearch_day_cmp( const void* key, const void* element )
 	return 0;
 }
 
-int bsearch_conflict( const void* key, const void* element )
+int bsearch_conflict( const void* key, const void* element )	// REQ5, REQ7
 {
 	const reservation* k = (const reservation*)key;
 	const reservation* res = (const reservation*)element;

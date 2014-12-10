@@ -1,0 +1,25 @@
+Welcome to CRR. This application uses the getdate_r() function.
+To start off, make sure you
+
+$> source datemsk.sh
+
+Otherwise you'll have a bad time, and the error.log will tell you anyways.
+
+This is just a basic console application. Implementing curses into my project was taking too much time so I abandoned and
+just went with no curses. The frantic rushes from previous "due dates" created some not so great code which made curses porting
+very difficult. Signals also were not implemented due to time constraints.
+
+*** NOTES about the rubric
+In the rubric, you mention that requirement 3b is for the UI. If you look above at the description, 3c should be the UI. Requirement
+3b refers to reading the schedule save file. For this, I use REQ3a, REQ3b, REQ3c. REQ3a and REQ3b are for reading command line args. 
+REQ3c is for requirement 3b in the rubric.
+***
+
+Tags in each file:
+
+crr.c - REQ3abc, REQ4, REQ5, REQ6, REQ7, REQ8, REQ10, REQ12
+reservation.c - REQ3ab, REQ4, REQ5, REQ6, REQ7, REQ8, REQ10, REQ11, REQ12
+crr_utils.c - REQ3c, REQ4, REQ5, REQ6, REQ7, REQ12
+search_sort_utils.c - REQ5, REQ7, REQ12
+
+Don't worry, REQ12 tags are only in the README.
