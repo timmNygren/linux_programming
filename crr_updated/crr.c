@@ -323,6 +323,7 @@ void setup_reservation( void )
 		break;
 	}
 }
+
 #define SELECT( function ) function( &resList, key )
 // main function
 void review_update_or_delete( size_t* roomlookups ) //int search_type, char** rooms, int numrooms )
@@ -455,7 +456,7 @@ void room_search( void )
 	size_t* roomlookups = NULL;
 	char** roomCheck = NULL;
 
-	puts( "\nHere is a list of valid room names.")
+	puts( "\nHere is a list of valid room names.");
 	print_rooms( rooms, numRooms, 0 );
 	puts( "\nEnter a room to check reservations over all days. Press enter to go back." );
 	while( fgets( buff, ROOM_NAME_LEN, stdin ) )
@@ -472,7 +473,7 @@ void room_search( void )
 		print_rooms( rooms, numRooms, 0 );
 		puts( "\nEnter a room to check reservations over all days. Press enter to go back." );
 	}
-	printf( "Room chosen was %s\n", rooms[roomCheck - rooms] );
+	// printf( "Room chosen was %s\n", rooms[roomCheck - rooms] );
 	key = calloc( ROOM_NAME_LEN, sizeof(char) );
 	if( !key )
 	{
@@ -504,7 +505,7 @@ void desc_search( void )
 	char* key = NULL;
 	size_t* roomlookups = NULL;
 
-	puts( "Enter a word to search reservation descriptions. Press enter to go back." );
+	puts( "\nEnter a word to search reservation descriptions. Press enter to go back." );
 	// print_rooms( rooms, numRooms, 0 );
 
 	fgets( buff, DESC_SIZE, stdin );
@@ -648,18 +649,19 @@ int main( int argc, char* argv[] )
 		clear_input_buffer();
 		if( c == 'y' || c == 'Y' )
 		{
+			puts( "\nReservations saved!\n" );
 			if( fileChanges )
 			{
 				resVect_write_file( &resList, reservationfilename );
-				puts( "Reservations saved!" );
 			}
 			break;
 		} else if( c == 'n' || c == 'N' ) {
+			puts( "\nReservations were not saved.\n" );
 			break;
 		}
 		puts( "Please enter Y or N to save." );
 	}
-
+	puts( "Have a great day!" );
 	return 0;
 }
 
