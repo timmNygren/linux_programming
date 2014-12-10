@@ -10,7 +10,7 @@
 const char* MAIN_MENU[] = { "What would you like to do today?\n", "1. Create a reservation at a particular time.\n", \
 			 "2. Search all the rooms for one day.\n", "3. Search for one room over all days.\n", \
 			 "4. Search the reservations description for a particular reservation.\n", \
-			 "5. List of valid date formats.\n", "Press enter to quit.\n" };
+			 "Press enter to quit.\n" };
 
 void main_menu( void )
 {

@@ -15,6 +15,7 @@
 // #define ROOM_SEARCH 1
 // #define DESC_SEARCH 2
 
+int fileChanges = 0;
 char* reservationfilename;
 char** rooms;
 int numRooms = 0;
@@ -305,6 +306,7 @@ void setup_reservation( void )
 				puts( "Press enter to go back." );
 				continue;
 			} else {
+				fileChanges = 1;
 				puts( "Your reservation has been added!" );
 				break;
 			}
@@ -392,10 +394,12 @@ void review_update_or_delete( size_t* roomlookups ) //int search_type, char** ro
 				puts( "There was a conflicting reservation:" );
 				res_print_reservation( conflict );
 			} else {
+				fileChanges = 1;
 				puts( "Your reservation has been updated!" );
 			}
 		} else {
 			resVect_delete( &resList, roomlookups[choice] );
+			fileChanges = 1;
 			puts( "The reservation was deleted." );
 		}
 	} else
@@ -546,12 +550,20 @@ void init( int argc, char* argv[] )
 	atexit( cleanup );
 	setup_rooms( argv[1] );
 	resVect_init( &resList );
-	add_reservations();
+	// add_reservations();
 
-	// resVect_read_file( &resList, reservationfilename );
-	// resVect_check_consistency( &resList, rooms, numRooms );
+	resVect_read_file( &resList, reservationfilename );
+	resVect_check_consistency( &resList, rooms, numRooms );
 
 	// init ncurses interface
+}
+
+void clear_input_buffer( void )
+{
+	int c;
+	do {
+		c = getchar();
+	} while( c != '\n' && c != EOF );
 }
 
 int main( int argc, char* argv[] )
@@ -564,17 +576,75 @@ int main( int argc, char* argv[] )
 	{
 		res_print_reservation( resVect_get( &resList, i ) );
 	}
-
 	puts("\n\n");
+
+	puts( "Welcome to Console Room Reservation!\n" );
+	// print_rooms( rooms, numRooms, 1 );
+	// puts( "What would you like to do today?" );
+	main_menu();
+	int choice;
+	while( fgets( buff, BUFFLEN, stdin ) != '\n' )
+	{
+		int err = sscanf(buff, "%d", &choice);
+		if( err != 1 || choice < 1 || choice > sizeof(MAIN_MENU)/sizeof(char*) )
+		{
+			puts( "Invalid choice." );
+			main_menu();
+			// puts( "The following rooms are:" );
+			// print_rooms( rooms, numRooms, 1 );
+			continue;
+		}
+		// room--;	// Make 0 offset
+		// break;
+		switch( choice ) {
+			case 1:
+				puts( "You chose setup_reservation" );
+				break;
+			case 2:
+				puts( "You chose day_search" );
+				break;
+			case 3:
+				puts( "You chose room_search" );
+				break;
+			case 4:
+				puts( "You chose desc_search" );
+				break;
+		}
+	}
+
 	// setup_reservation();
 	// day_search();
 	// room_search();
-	desc_search();
+	// desc_search();
+
+
+
+
 
 	puts("\n\n");
 	for( int i = 0; i < resVect_count( &resList ); i++ )
 	{
 		res_print_reservation( resVect_get( &resList, i ) );
+	}
+	puts("\n\n");
+	
+	int c;
+	puts( "Would you like to save (Y/N)?" );
+	while( c = getchar() )
+	{
+		clear_input_buffer();
+		if( c == 'y' || c == 'Y' )
+		{
+			if( fileChanges )
+			{
+				resVect_write_file( &resList );
+				puts( "Reservations saved!" );
+			}
+			break;
+		} else if( c == 'n' || c == 'N' ) {
+			break;
+		}
+		puts( "Please enter Y or N to save." );
 	}
 
 	return 0;
