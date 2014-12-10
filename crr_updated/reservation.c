@@ -350,7 +350,7 @@ size_t* resVect_select_res_day( resVect* v, time_t key )
 		while( lefti >= 0 )
 		{
 			puts( "INside WHILE" );
-			if( (res_index - 1) < 0 )
+			if( res_index == 0 )
 			{
 				puts( "RES_INDEX - 1 IS LESS THAN 0" );
 				break;
