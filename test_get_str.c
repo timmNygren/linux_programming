@@ -2,6 +2,7 @@
  * Example code for setting flags indicating signal arrival within the context
  * of a curses application.
  */
+//test
 #include <ctype.h>
 #include <signal.h>
 #include <stdlib.h>
